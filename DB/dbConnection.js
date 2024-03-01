@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config({ path: "./config.env" });
 
+const mongoDB = process.env.DATABASE;
 const dbConnection = async () => {
-    try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/MOTORENT');
-        console.log("DB connected successfully");
-    } catch (error) {
-        console.log("DB connection failed!");
-    }
+  try {
+    await mongoose.connect(mongoDB);
+    console.log("DB connected successfully");
+  } catch (error) {
+    console.log("DB connection failed!");
+  }
 };
-
 
 export default dbConnection;

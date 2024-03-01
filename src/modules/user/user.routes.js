@@ -1,8 +1,8 @@
 import express from "express";
-const carRouter = express.Router();
+const userRouter = express.Router();
 //-----------------------------
 //? import controllers
 //----------------------------
 //? routes
 //----------------------------
-export default carRouter;
+export default userRouter;
