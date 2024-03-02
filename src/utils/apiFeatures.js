@@ -39,7 +39,7 @@ class APIFeatures {
     return this;
   }
 
-  //? 4- penetration (limit the no. of results in pages and show by page number)
+  //? 4- paginate (limit the no. of results in pages and show by page number)
   paginate() {
     const page = Number(this.queryString.page) || 1;
     const limit = Number(this.queryString.limit) || 100;
