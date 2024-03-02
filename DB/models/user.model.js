@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
         ref: "Car",
       },
     ],
-    owendCars: [
+    ownedCars: [
       {
         type: mongoose.Schema.ObjectId,
         ref: "Car",
