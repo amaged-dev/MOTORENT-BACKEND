@@ -1,7 +1,8 @@
 //
-import APIFeatures from "../utils/apiFeatures";
-import catchAsync from "../utils/catchAsync";
-import AppError from "../utils/appError";
+import APIFeatures from "../utils/apiFeatures.js";
+import catchAsync from "../utils/catchAsync.js";
+import AppError from "../utils/appError.js";
+import { sendData } from "../utils/sendData.js";
 //-----------------------------------------------
 //! 1- get All
 export function getAll(Model) {
@@ -19,12 +20,13 @@ export function getAll(Model) {
     // //? Finaly Excute Query
     const documents = await queryFeatured.queryDB;
 
-    res.status(200).json({
-      status: "Success",
-      statusMsg: "Fetched Successfully",
-      count: documents.length,
-      data: documents,
-    });
+    sendData(
+      200,
+      "success",
+      "Requsted data successfully fetched",
+      documents,
+      res
+    );
   });
 }
 
@@ -38,17 +40,23 @@ export function getOne(Model, PopulateObj) {
     if (!document) {
       return next(new AppError(`This Document Id Not Exists`, 404));
     }
-    res.status(200).json({
-      status: "Success",
-      statusMsg: "Fetched Successfully",
-      data: document,
-    });
+    sendData(
+      200,
+      "success",
+      "Requsted data successfully fetched",
+      document,
+      res
+    );
   });
 }
 
 // ! 3- Update  function by id
 export function updateOne(Model) {
   return catchAsync(async (req, res, next) => {
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(new AppError("this route is not for password update", 500));
+    }
+    //? No need for select from the body because of the validation middleware
     const updatedDocument = await Model.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -72,11 +80,7 @@ export function createOne(Model) {
   return catchAsync(async (req, res, next) => {
     const newDocument = await Model.create(req.body);
 
-    res.status(201).json({
-      status: "Success",
-      statusMsg: "Created Successfully",
-      data: newDocument,
-    });
+    sendData(200, "success", "Created successfully", newDocument, res);
   });
 }
 
@@ -87,9 +91,7 @@ export function deleteOne(Model) {
     if (!document) {
       return next(new AppError(`This Document Id Not Exists`, 404));
     }
-    res.status(200).json({
-      status: "Success",
-      statusMsg: "Deleted Successfully",
-    });
+
+    sendData(200, "success", "Deleted Successfully", document, res);
   });
 }
