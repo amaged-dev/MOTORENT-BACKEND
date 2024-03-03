@@ -100,6 +100,11 @@ const userSchema = new mongoose.Schema(
       default: true,
       select: false,
     },
+    wishlist: [{
+      type: mongoose.Schema.ObjectId,
+      ref: "Car",
+      unique: [true, 'Car already exists in the wishlist'],
+    }]
   },
   {
     timestamps: true,
