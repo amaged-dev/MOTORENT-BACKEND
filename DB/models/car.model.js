@@ -7,19 +7,28 @@ const carSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Car owner is required"],
     },
-    name: {
+    manufacturingYear: {
+      type: Number,
+      required: [true, "Car manufacturingYear is required"],
+    },
+    model: {
       type: String,
-      required: [true, "Car name is required"],
+      required: [true, "Car model is required"],
       trim: true,
     },
+    brand: {
+      type: mongoose.Schema.ObjectId,
+      required: [true, "Car brandId is required"],
+      ref: "Brand",
+    },
     category: {
-      type: String,
+      enum: ["SUV", "Sedan", "Hatchback", "Coupe", "Convertible", "Wagon"],
       required: [true, "Car category is required"],
-      trim: true,
+      default: "Sedan",
     },
     tankCapacity: {
       type: Number,
-      required: [true, "Car tank capacity is required"],
+      required: [true, "Car tankCapacity is required"],
     },
     average: {
       type: Number,
@@ -41,12 +50,17 @@ const carSchema = new mongoose.Schema(
       required: [true, "Car price for day is required"],
     },
     location: {
-      type: String,
-      required: [true, "Please Enter car location"],
+      city: { type: String, required: [true, "city is required"] },
+      area: { type: String, required: [true, "area is required"] },
+      description: { type: String },
     },
     totalKM: {
       type: Number,
       default: 0,
+    },
+    plateNumber: {
+      type: String,
+      required: [true, "Please Enter car palate number"],
     },
   },
   {
