@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
-const carSchema = new mongoose.Schema(
-  {
+const carSchema = new mongoose.Schema({
     ownerId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
@@ -88,6 +87,16 @@ const carSchema = new mongoose.Schema(
         type: String,
         required: [true, "Please Enter car inspection"],
       },
+    },
+    images: [{
+      id: { type: String, required: true },
+      url: { type: String, required: true },
+    }],
+    rating: {
+      type: Number,
+      default: 1,
+      min: 1,
+      max: 5,
     }
   },
   {
