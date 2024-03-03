@@ -4,6 +4,7 @@ import {
   getOne,
   deleteOne,
   updateOne,
+  createOne,
 } from "../controllers.factory.js";
 
 const populateObj = [
@@ -24,3 +25,5 @@ export const getCar = getOne(Car, populateObj);
 export const deleteCar = deleteOne(Car);
 
 export const updateCar = updateOne(Car);
+
+export const createCar = createOne(Car);
