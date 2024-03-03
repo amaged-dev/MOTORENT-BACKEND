@@ -41,7 +41,16 @@ const carSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Car capacity is required"],
     },
-    isRented: {
+    active: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      enum: ["available", "rented", "pending", "rejected"],
+      required: [true, "Car status is required"],
+      default: "pending",
+    },
+    approved: {
       type: Boolean,
       default: false,
     },
@@ -62,6 +71,24 @@ const carSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please Enter car palate number"],
     },
+    documents: {
+      insurance: {
+        type: String,
+        required: [true, "Please Enter car insurance"],
+      },
+      driverLicense: {
+        type: String,
+        required: [true, "Please Enter car license"],
+      },
+      carLicense: {
+        type: String,
+        required: [true, "Please Enter car registration"],
+      },
+      carInspection: {
+        type: String,
+        required: [true, "Please Enter car inspection"],
+      },
+    }
   },
   {
     timestamps: true,
