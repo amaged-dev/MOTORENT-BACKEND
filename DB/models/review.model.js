@@ -33,6 +33,41 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+// Static method to calculate average rating
+reviewSchema.statics.calculateAverageRating = async function (carId) {
+  const stats = await this.aggregate([
+    {
+      $match: { car: carId },
+    },
+    {
+      $group: {
+        _id: "$car",
+        averageRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  if (stats.length > 0) {
+    await this.model("Car").findByIdAndUpdate(carId, {
+      averageRating: stats[0].averageRating,
+    });
+  } else {
+    await this.model("Car").findByIdAndUpdate(carId, {
+      averageRating: 0,
+    });
+  }
+};
+
+// Middleware to calculate average rating after saving a review
+reviewSchema.post("save", function () {
+  this.constructor.calculateAverageRating(this.car);
+});
+
+// Middleware to calculate average rating before removing a review
+reviewSchema.pre("remove", function () {
+  this.constructor.calculateAverageRating(this.car);
+});
+
 const Review = mongoose.model("Review", reviewSchema);
 
 export default Review;
