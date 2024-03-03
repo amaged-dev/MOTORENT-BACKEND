@@ -5,7 +5,7 @@ import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
 import { sendEmail } from "../../utils/email.js";
-import { resetPassTemp, signupTemp } from "../../utils/generateHTML.js";
+import { resetPassTemp } from "../../utils/generateHTML.js";
 import { createSendToken } from "./auth.controller.js";
 
 //----------------------------------------------------------------
@@ -35,35 +35,34 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
 
 //----------------------------------------------
 //! forgor password functionality
-export const forgotPassword = catchAsync(async (req, res) => {
+export const forgotPassword = catchAsync(async (req, res, next) => {
   //? 1- get the user by sent email
   const user = await User.findOne({ email: req.body.email });
-  // if (!user || user.email !== req.user.email) {
-  //   return next(new AppError(
-  //
-  //     "this is not this user correct email, please try again",
-  //     401
-  //   ));
-  // }
 
   //? 2- generate a random token will expires in 15 minutes
   const resetToken = user.createResetPasswordToken(15);
   await user.save({ validateBeforeSave: false });
 
   //? 3- send email to the user with the reset pass token
-  const url = `${process.env.BASE_URL}api/v1/users/resetPassword/${token}`;
+  // const url = `${process.env.BASE_URL}api/v1/users/resetPassword/${token}`;
+  // const resetPasswordHTML = resetPassTemp(url, newUser.firstName);
 
-  const resetPasswordHTML = resetPassTemp(url, newUser.firstName);
-
+  const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/resetPassword/${resetToken}`;
+  const subject = "Reset Password Token link will expires whithin 15 minutes";
+  const message = `We've received a request to reset your password,
+   Copy this code to your page: ${resetToken}.
+   If you didn't forget your password, please ignore this email!`;
   try {
     await sendEmail({
-      email: newUser.email,
+      email: user.email,
       subject,
-      html: resetPasswordHTML,
+      url,
+      message,
+      // html: resetPasswordHTML,
     });
     res.status(200).json({
       status: "success",
-      message: " Verify Email link Sent To your Email",
+      message: " Reset Password link Sent To your Email",
     });
   } catch (err) {
     //? remove the reset token from the user object and save it
@@ -81,7 +80,7 @@ export const forgotPassword = catchAsync(async (req, res) => {
 
 //----------------------------------------------------------------
 
-export const resetPassword = catchAsync(async (req, res) => {
+export const resetPassword = catchAsync(async (req, res, next) => {
   const { token } = req.params;
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
