@@ -22,8 +22,13 @@ const rentalSchema = new mongoose.Schema({
         type: Date,
         required: [true, "Rental to date is required"]
     },
-});
+}, { timestamps: true }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 const Rental = mongoose.model("Rental", rentalSchema);
 export default Rental;
 
-
+rentalSchema.virtual('price').get(function () {
+    const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+    const numberOfDays = Math.round(Math.abs((this.to - this.from) / oneDay));
+    const basePricePerDay = 50; // Replace with your actual base price per day
+    return numberOfDays * basePricePerDay;
+});
