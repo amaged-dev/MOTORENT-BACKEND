@@ -34,7 +34,15 @@ const carSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Car price for day is required']
     },
-});
+    location: {
+        type: String,
+        required: [true, 'Please Enter car location']
+    },
+    totalKM: {
+        type: Number,
+        default: 0
+    },
+}, { timestamps: true, virtuals: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
 const Car = mongoose.model("Car", carSchema);
 
