@@ -1,7 +1,5 @@
 # MOTORENT Car Rental Application API
 
-## Post man Collection : https://documenter.getpostman.com/view/32077555/2sA2xb7G4x
-
 ## Introduction
 
 This project is a comprehensive car rental website designed to facilitate easy rental processes for both customers and administrators. It incorporates a robust backend built with Node.js and Express, alongside a powerful front-end experience. The website offers features such as car browsing, advanced filtering, and sorting, as well as secure user authentication and payment processing.
@@ -48,7 +46,7 @@ Refined for clarity and efficiency, our error handling mechanisms ensure compreh
 
 ## Documentation
 
-For a detailed overview of API endpoints, request and response formats, and interactive examples, please refer to our comprehensive [API Documentation on Postman](https://documenter.getpostman.com/view/25935609/2s9Yyy7J3o).
+For a detailed overview of API endpoints, request and response formats, and interactive examples, please refer to our comprehensive [API Documentation on Postman](https://documenter.getpostman.com/view/32077555/2sA2xb7G4x).
 
 ## Getting Started
 
