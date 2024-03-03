@@ -78,6 +78,7 @@ export function updateOne(Model) {
 // ! 4- create new one  by id
 export function createOne(Model) {
   return catchAsync(async (req, res, next) => {
+    //? depend on the previous validations
     const newDocument = await Model.create(req.body);
 
     sendData(200, "success", "Created successfully", newDocument, res);

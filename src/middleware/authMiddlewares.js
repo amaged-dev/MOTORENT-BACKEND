@@ -7,7 +7,7 @@ import AppError from "../utils/appError.js";
 //----------------------------------------------------
 
 //? add my object to the req.params as middleware to reuse
-export const adduserIdToURL = (req, res, next) => {
+export const addUserIdToURL = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };

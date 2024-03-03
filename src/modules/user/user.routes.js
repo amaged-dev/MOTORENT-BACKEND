@@ -9,7 +9,7 @@ import { signup, login, logout, verifyAccount} from "./auth.controller.js";
 // prettier-ignore
 import {forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js"
 // prettier-ignore
-import { accessRestrictedTo, protect, adduserIdToURL } from "../../middleware/authMiddlewares.js";
+import { accessRestrictedTo, protect, addUserIdToURL } from "../../middleware/authMiddlewares.js";
 //----------------------------
 userRouter.use(cookieParser());
 //? routes
@@ -27,8 +27,8 @@ userRouter.post("/logout", logout);
 
 userRouter
   .route("/userProfile") //? reference to loggedin user
-  .get(adduserIdToURL, getUser)
-  .patch(adduserIdToURL, updateUser);
+  .get(addUserIdToURL, getUser)
+  .patch(addUserIdToURL, updateUser);
 
 userRouter.patch("/userProfile/updatePassword", updateMyPassword);
 //------------------------------------------------------------
