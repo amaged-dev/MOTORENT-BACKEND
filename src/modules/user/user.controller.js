@@ -1,6 +1,3 @@
-import APIFeatures from "../../utils/apiFeatures.js";
-import catchAsync from "../../utils/catchAsync.js";
-import AppError from "../../utils/appError.js";
 import User from "../../../DB/models/user.model.js";
 import {
   getAll,
