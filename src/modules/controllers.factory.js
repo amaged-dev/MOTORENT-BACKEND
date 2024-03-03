@@ -7,9 +7,9 @@ import { sendData } from "../utils/sendData.js";
 //! 1- get All
 export function getAll(Model) {
   return catchAsync(async (req, res, next) => {
-    let filterReviewId = {};
+    let filterCarId = {};
 
-    if (req.params.reviewId) filterReviewId = { Review: req.params.reviewId };
+    if (req.params.carId) filterCarId = { car: req.params.carId };
 
     const queryFeatured = new APIFeatures(Model.find(filterReviewId), req.query)
       .filter()
