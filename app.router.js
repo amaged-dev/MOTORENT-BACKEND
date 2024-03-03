@@ -1,15 +1,15 @@
 import cors from "cors";
-import createDOMPurify from 'dompurify';
+import createDOMPurify from "dompurify";
 import mongoSanitize from "express-mongo-sanitize";
 import rateLimit from "express-rate-limit";
-import { JSDOM } from 'jsdom';
+import { JSDOM } from "jsdom";
 import carRouter from "./src/modules/car/car.routes.js";
 import userRouter from "./src/modules/user/user.routes.js";
 import AppError from "./src/utils/appError.js";
-import { errorController } from './src/utils/globalErrorHandler.js';
+import { errorController } from "./src/utils/globalErrorHandler.js";
 import hpp from "hpp";
 
-const { window } = new JSDOM('');
+const { window } = new JSDOM("");
 const DOMPurify = createDOMPurify(window);
 
 export function appRouter(app, express) {
@@ -18,11 +18,10 @@ export function appRouter(app, express) {
   const limiter = rateLimit({
     max: 100, // limit each IP to 100 requests per windowMs
     windowMs: 60 * 60 * 1000, // 1 hour
-    message: "Too many requests from this IP, please try again after an hour!"
+    message: "Too many requests from this IP, please try again after an hour!",
   });
-  app.use('/api', limiter);
-  app.use(express.json());
-  app.use(express.static('uploads'));
+  app.use("/api", limiter);
+  app.use(express.static("uploads"));
 
   // data sanitization against NoSQL query injection => clean data from malicious MongoDB operators
   app.use(mongoSanitize());
@@ -33,10 +32,14 @@ export function appRouter(app, express) {
     next();
   });
 
+  app.use(express.json());
+
   // prevent parameter pollution => remove duplicate fields from the query string
-  app.use(hpp({
-    // whitelist: [] => add fields to whitelist
-  }));
+  app.use(
+    hpp({
+      // whitelist: [] => add fields to whitelist
+    })
+  );
 
   // home page
   app.get("/", (req, res) => res.send("Hello World!"));
