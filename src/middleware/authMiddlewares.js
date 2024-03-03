@@ -6,16 +6,16 @@ import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/appError.js";
 //----------------------------------------------------
 
-//? add my objct to the req.params as middleware to reuse
+//? add my object to the req.params as middleware to reuse
 export const addMeToURL = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
 
 //? MiddleWare to check if the user role is included in the specified roles have access
-export const accessRestrictedTo = (...allwoedRoles) => {
+export const accessRestrictedTo = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!allwoedRoles.includes(req.user.role)) {
+    if (!allowedRoles.includes(req.user.role)) {
       return AppError(
         res,
         "your account is not allowed to perform this action, call the admin for permission",
@@ -26,7 +26,7 @@ export const accessRestrictedTo = (...allwoedRoles) => {
   };
 };
 
-//? this middleware function is to protect the page from entered by not logged in user or has expiredttoken
+//? this middleware function is to protect the page from entered by not logged in user or has expired token
 export const protect = catchAsync(async (req, res, next) => {
   //? 1- get the toke from req.header after check if its sent
   let token;
@@ -50,17 +50,17 @@ export const protect = catchAsync(async (req, res, next) => {
   console.log("token*****", token);
   const decodeToken = await promisify(jwt.verify)(token, process.env.JWT_KEY);
 
-  //? 3- check if user still exsists
+  //? 3- check if user still exists
   const loggingInUser = await User.findById(decodeToken.id);
   if (!loggingInUser) {
     return AppError(
       res,
-      "This token user is no longer exsist, please try another login",
+      "This token user is no longer exist, please try another login",
       401
     );
   }
 
-  //? 4- chek if user changed password after token was issued
+  //? 4- check if user changed password after token was issued
   if (loggingInUser.IsPasswordChangedAfter(decodeToken.iat)) {
     return AppError(
       res,
@@ -87,8 +87,8 @@ export const isVerified = catchAsync(async (req, res, next) => {
 });
 
 //-----------------------------------------------------
-//? middleware to only allow the createrr or admin to perform the next action
-export const isCreaterUserOrAdmin = (Model, modelName) => {
+//? middleware to only allow the creator or admin to perform the next action
+export const isCreatorUserOrAdmin = (Model, modelName) => {
   return catchAsync(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
     if (!document) return AppError(res, `This ${modelName} is not found`, 401);
@@ -98,7 +98,7 @@ export const isCreaterUserOrAdmin = (Model, modelName) => {
     ) {
       return AppError(
         res,
-        `Only Admin or createrUser can perform this to ${modelName}`,
+        `Only Admin or creatorUser can perform this to ${modelName}`,
         401
       );
     }
