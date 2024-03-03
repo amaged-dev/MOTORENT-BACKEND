@@ -260,6 +260,9 @@ export const signupTemp = (link, user) => `<!doctype html>
                                 <table border="0" cellpadding="0" cellspacing="0">
                                   <tbody>
                                     <tr>
+                                      <td> <p>Verify Email link will expires whithin 15 minutes</p> </td>
+                                    </tr>
+                                    <tr>
                                       <td> <a href="${link}" target="_blank">confirm email</a> </td>
                                     </tr>
                                   </tbody>
@@ -286,7 +289,7 @@ export const signupTemp = (link, user) => `<!doctype html>
   </body>
 </html>`;
 
-export const resetPassTemp = (code) => `<!DOCTYPE html>
+export const resetPassTemp = (link, user) => `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -294,7 +297,8 @@ export const resetPassTemp = (code) => `<!DOCTYPE html>
     <title>Password Reset Confirmation Code</title>
 </head>
 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
-    <table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; margin: 0; padding: 0;">
+<h2>Hello ${user} You are just one step away</h2>    
+<table width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f4f4f4; margin: 0; padding: 0;">
         <tr>
             <td align="center" valign="top" style="padding: 20px 0;">
                 <table width="600" cellspacing="0" cellpadding="0" border="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
@@ -302,8 +306,9 @@ export const resetPassTemp = (code) => `<!DOCTYPE html>
                         <td style="padding: 40px 30px; text-align: center;">
                             <img src="https://yourwebsite.com/logo.png" alt="Your Logo" style="max-width: 150px; margin-bottom: 20px;">
                             <h2 style="font-size: 24px; color: #333333; margin: 0;">Password Reset Confirmation</h2>
+                            <p style="font-size: 32px; font-weight: bold; color: #007BFF; margin-top: 10px;">Reset Password Token link will expires whithin 15 minutes</p>
                             <p style="font-size: 16px; color: #555555; margin-top: 20px;">Your confirmation code for resetting your password is:</p>
-                            <p style="font-size: 32px; font-weight: bold; color: #007BFF; margin-top: 10px;">${code}</p>
+                            <p style="font-size: 32px; font-weight: bold; color: #007BFF; margin-top: 10px;"> <a href="${link}" target="_blank">Reset Password</a> </p>
                             <p style="font-size: 16px; color: #555555; margin-top: 20px;">Please enter this code on our website to proceed with the password reset.</p>
                             <p style="font-size: 16px; color: #555555; margin-top: 20px;">If you didn't request this reset, you can ignore this email.</p>
                         </td>
@@ -319,5 +324,4 @@ export const resetPassTemp = (code) => `<!DOCTYPE html>
     </table>
 </body>
 </html>
-`
-
+`;
