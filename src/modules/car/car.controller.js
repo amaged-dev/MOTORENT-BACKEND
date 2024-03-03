@@ -51,6 +51,47 @@ export const activateCar = catchAsync(async (req, res, next) => {
   sendData(200, "success", "Car Activated Successfully", null, res);
 });
 
+export const getCarsByCategory = catchAsync(async (req, res, next) => {
+  const cars = await Car.find({ category: req.body.category });
+  if (!cars) {
+    return next(new AppError(`This Category Not Exists`, 404));
+  }
+  sendData(200, "success", "Requested data successfully fetched", cars, res);
+});
+
+export const getAllCategories = catchAsync(async (req, res, next) => {
+  const categories = await Car.find().distinct("category");
+  if (!categories) {
+    return next(new AppError(`No Categories Exists`, 404));
+  }
+  sendData(200, "success", "Requested data successfully fetched", categories, res);
+});
+
+export const getTop5Cars = catchAsync(async (req, res, next) => {
+  const top5Cars = await Car.aggregate([
+    {
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "car",
+        as: "reviews",
+      },
+    },
+    {
+      $addFields: {
+        totalRating: { $sum: "$reviews.rating" },
+      },
+    },
+    {
+      $sort: { totalRating: -1 },
+    },
+    {
+      $limit: 5,
+    },
+  ]);
+  sendData(200, "success", "Top 5 Cars fetched successfully", top5Cars, res);
+});
+
 const populateObj = [
   {
     path: "rentedCars",
