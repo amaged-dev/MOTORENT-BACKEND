@@ -37,7 +37,6 @@ export const protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-
   if (!token) {
     return next(
       new AppError(
@@ -53,8 +52,8 @@ export const protect = catchAsync(async (req, res, next) => {
   const decodeToken = await promisify(jwt.verify)(token, process.env.JWT_KEY);
 
   //? 3- check if user still exists
-  const loggingInUser = await User.findById(decodeToken.id);
-  if (!loggingInUser) {
+  const loggedInUser = await User.findById(decodeToken.id);
+  if (!loggedInUser) {
     return next(
       new AppError(
         "This token user is no longer exist, please try another login",
@@ -64,7 +63,7 @@ export const protect = catchAsync(async (req, res, next) => {
   }
 
   //? 4- check if user changed password after token was issued
-  if (loggingInUser.IsPasswordChangedAfter(decodeToken.iat)) {
+  if (loggedInUser.IsPasswordChangedAfter(decodeToken.iat)) {
     return next(
       new AppError(
         "this user password was changed after token was issued, please login again.",
@@ -73,7 +72,7 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
 
-  req.user = loggingInUser;
+  req.user = loggedInUser;
   next();
 });
 

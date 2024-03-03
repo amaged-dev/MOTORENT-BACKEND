@@ -21,7 +21,6 @@ export const createSendToken = (user, statusCode, statusmsg, message, res) => {
   // check if marked login then make the token available within extentended date if not make it expired
   const tokenExpire = user.isLoggedIn ? process.env.JWT_EXPIRES_IN : "0d";
   const token = signToken(user, tokenExpire);
-
   const cookieExpireWithin = user.isLoggedIn
     ? process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     : -1000;
@@ -63,6 +62,8 @@ export const signup = catchAsync(async (req, res, next) => {
   }
 
   const newUser = await User.create(req.body);
+
+  //? no need because of the validations before this step
   // const newUser = await User.create({
   //   // ? just pass to the schema model only the required data to save
   //   firstName: req.body.firstName,
@@ -80,7 +81,6 @@ export const signup = catchAsync(async (req, res, next) => {
   await newUser.save({ validateBeforeSave: false });
 
   // const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
-
   // const html = signupTemp(url, newUser.firstName);
 
   const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
@@ -148,13 +148,6 @@ export const verifyAccount = catchAsync(async (req, res, next) => {
     user,
     res
   );
-  // createSendToken(
-  //   user,
-  //   200,
-  //   "Success",
-  //   "User Email Verified Successfully",
-  //   res
-  // );
 });
 //----------------------------------------------------------------
 export const login = catchAsync(async (req, res, next) => {
