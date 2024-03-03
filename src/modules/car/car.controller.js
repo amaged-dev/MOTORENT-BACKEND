@@ -26,4 +26,4 @@ export const deleteCar = deleteOne(Car);
 
 export const updateCar = updateOne(Car);
 
-export const createCar = createOne(Car);
+export const addCar = createOne(Car);
