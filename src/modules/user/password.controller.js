@@ -66,8 +66,8 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     //? remove the reset token from the user object and save it
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(
       new AppError(
@@ -102,8 +102,8 @@ export const resetPassword = catchAsync(async (req, res, next) => {
   // reset the resettoken and expire date to undefined
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
 
   await user.save();
   //? 5- login the user in , send JWT to him
