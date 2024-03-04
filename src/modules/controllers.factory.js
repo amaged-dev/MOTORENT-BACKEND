@@ -23,7 +23,7 @@ export function getAll(Model) {
     sendData(
       200,
       "success",
-      "Requsted data successfully fetched",
+      "Requested data successfully fetched",
       documents,
       res
     );
@@ -43,7 +43,7 @@ export function getOne(Model, PopulateObj) {
     sendData(
       200,
       "success",
-      "Requsted data successfully fetched",
+      "Requested data successfully fetched",
       document,
       res
     );
