@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
-const carSchema = new mongoose.Schema({
+const carSchema = new mongoose.Schema(
+  {
     ownerId: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
@@ -21,6 +22,7 @@ const carSchema = new mongoose.Schema({
       ref: "Brand",
     },
     category: {
+      type: String,
       enum: ["SUV", "Sedan", "Hatchback", "Coupe", "Convertible", "Wagon"],
       required: [true, "Car category is required"],
       default: "Sedan",
@@ -45,6 +47,7 @@ const carSchema = new mongoose.Schema({
       default: false,
     },
     status: {
+      type: String,
       enum: ["available", "rented", "pending", "rejected"],
       required: [true, "Car status is required"],
       default: "pending",
@@ -88,16 +91,18 @@ const carSchema = new mongoose.Schema({
         required: [true, "Please Enter car inspection"],
       },
     },
-    images: [{
-      id: { type: String, required: true },
-      url: { type: String, required: true },
-    }],
+    images: [
+      {
+        id: { type: String, required: true },
+        url: { type: String, required: true },
+      },
+    ],
     rating: {
       type: Number,
       default: 1,
       min: 1,
       max: 5,
-    }
+    },
   },
   {
     timestamps: true,
