@@ -92,7 +92,7 @@ export const isVerified = catchAsync(async (req, res, next) => {
 
 //-----------------------------------------------------
 //? middleware to only allow the creator or admin to perform the next action
-export const isCreaterUserOrAdmin = (Model, modelName) => {
+export const isCreatorUserOrAdmin = (Model, modelName) => {
   return catchAsync(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
     if (!document)
