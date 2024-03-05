@@ -1,4 +1,5 @@
 import Car from "../../../DB/models/car.model.js";
+import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
 import { createOne, deleteOne, getAll, getOne, updateOne } from "../controllers.factory.js";
@@ -91,6 +92,52 @@ export const getTop5Cars = catchAsync(async (req, res, next) => {
   ]);
   sendData(200, "success", "Top 5 Cars fetched successfully", top5Cars, res);
 });
+
+export const getTop5CarsByCategory = catchAsync(async (req, res, next) => {
+  const top5Cars = await Car.aggregate([
+    {
+      $match: { category: req.body.category },
+    },
+    {
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "car",
+        as: "reviews",
+      },
+    },
+    {
+      $addFields: {
+        totalRating: { $sum: "$reviews.rating" },
+      },
+    },
+    {
+      $sort: { totalRating: -1 },
+    },
+    {
+      $limit: 5,
+    },
+  ]);
+  sendData(200, "success", "Top 5 Cars fetched successfully", top5Cars, res);
+});
+
+export const getTop5CheapestCars = catchAsync(async (req, res, next) => {
+  const top5Cars = await Car.find().sort({ priceForDay: 1 }).limit(5);
+  sendData(200, "success", "Top 5 Cheapest Cars fetched successfully", top5Cars, res);
+});
+
+export const getTop5ExpensiveCars = catchAsync(async (req, res, next) => {
+  const top5Cars = await Car.find().sort({ priceForDay: -1 }).limit(5);
+  sendData(200, "success", "Top 5 Expensive Cars fetched successfully", top5Cars, res);
+});
+
+export const getCarsByManufacturingYear = catchAsync(async (req, res, next) => {
+  const cars = await Car.find({ manufacturingYear: { $gte: req.body.from, $lte: req.body.to } });
+  if (!cars) {
+    return next(new AppError(`No Cars Exists in this year`, 404));
+  }
+  sendData(200, "success", "Requested data successfully fetched", cars, res);
+})
 
 const populateObj = [
   {
