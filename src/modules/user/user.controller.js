@@ -43,6 +43,15 @@ export const removeFromWishlist = catchAsync(async (req, res, next) => {
   sendData(200, "success", "Car removed from wishlist successfully", null, res);
 });
 
+export const getAllUserCars = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).populate('ownedCars').select('ownedCars rentedCars');
+
+  if (!user) {
+    return next(new AppError(`user id is not exists`, 404));
+  }
+  sendData(200, "success", "User cars fetched successfully", user, res);
+});
+
 const populateObj = [
   {
     path: "rentedCars",
