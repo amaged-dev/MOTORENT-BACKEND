@@ -11,9 +11,8 @@ import {
 } from "./review.controller.js";
 
 import {
-  accessRestrictedTo,
   protect,
-  isCreaterUserOrAdmin,
+  isCreatorUserOrAdmin,
 } from "../../middleware/authMiddlewares.js";
 
 //----------------------------
@@ -25,12 +24,12 @@ carRouter.use(protect);
 
 carRouter.post("/addCar", addReview);
 
-carRouter.use(isCreaterUserOrAdmin);
+carRouter.use(isCreatorUserOrAdmin);
 // prettier-ignore
 carRouter
-.route("/:id")
-.get(getReview)
-.patch(updateReview)
-.delete(deleteReview);
+  .route("/:id")
+  .get(getReview)
+  .patch(updateReview)
+  .delete(deleteReview);
 //----------------------------
 export default carRouter;
