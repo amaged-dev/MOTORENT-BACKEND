@@ -104,7 +104,11 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Car",
       unique: [true, 'Car already exists in the wishlist'],
-    }]
+    }],
+    messages: [{
+      type: mongoose.Schema.ObjectId,
+      ref: "Message",
+    }],
   },
   {
     timestamps: true,
