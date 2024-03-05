@@ -19,7 +19,7 @@ const messageSchema = new mongoose.Schema({
     default: Date.now(),
   },
   status: {
-    enum: ['solved', 'unsolved', 'pending'],
+    enum: ['solved', 'pending'],
     default: 'pending',
   },
   attachments: {
