@@ -138,7 +138,6 @@ export const verifyAccount = catchAsync(async (req, res, next) => {
 
   //? mark the user as verified
   user.isVerified = true;
-  user.verifyEmailToken = undefined;
   await user.save();
 
   sendData(
@@ -160,7 +159,7 @@ export const login = catchAsync(async (req, res, next) => {
 
   //? 2- get the user obj by email an include in it the pass
   const user = await User.findOne({ email }).select("+password +isVerified");
-  //?3- check if the user email is not verfied email
+  //?3- check if the user email is not verified email
   if (!user) {
     return next(new AppError("this email is not a valid email", 401));
   }
@@ -170,9 +169,9 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Please verify your email", 401));
   }
 
-  //? 3- check if the user email excist & password is correct
+  //? 3- check if the user email exist & password is correct
   if (!user || !(await user.checkCorrectPassword(password, user.password))) {
-    return next(new AppError("Incrorrect email or password", 401));
+    return next(new AppError("Incorrect email or password", 401));
   }
 
   const loggedInUser = await User.findByIdAndUpdate(
@@ -180,6 +179,9 @@ export const login = catchAsync(async (req, res, next) => {
     { isLoggedIn: true },
     { new: true }
   );
+
+  loggedInUser.verifyEmailToken = undefined;
+  await loggedInUser.save({ validateBeforeSave: false });
 
   //? make token with this user id
   createSendToken(
@@ -200,7 +202,7 @@ export const logout = catchAsync(async (req, res, next) => {
     { new: true }
   );
 
-  //? make this user token expired by marking the user as loggedin= false then will make expire token
+  //? make this user token expired by marking the user as logged in= false then will make expire token
   createSendToken(
     loggedInUser,
     200,
