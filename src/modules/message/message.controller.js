@@ -33,7 +33,7 @@ export const addReplay = catchAsync(async (req, res, next) => {
     if (!message) return next(new AppError("No message found", 404));
     sendData(200, "success", "Replay added successfully", message, res);
 });
-//ANCHOR - This function will be edit to add cloudinary image upload
+//LINK - This function will be edit to add cloudinary image upload
 export const sendMessage = catchAsync(async (req, res, next) => {
     req.body.user = req.user.id;
     const message = await Message.create(req.body);

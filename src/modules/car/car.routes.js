@@ -1,6 +1,6 @@
 import express from "express";
 import Car from "../../../DB/models/car.model.js";
-import { isCreatorUserOrAdmin, protect } from "../../middleware/authMiddlewares.js";
+import { accessRestrictedTo, isCreatorUserOrAdmin, protect } from "../../middleware/authMiddlewares.js";
 import * as carController from "./car.controller.js";
 
 const carRouter = express.Router();
@@ -16,7 +16,7 @@ carRouter.get("/getTop5ExpensiveCars", carController.getTop5ExpensiveCars);
 carRouter.get("/getCar", carController.getCar);
 
 carRouter.use(protect);
-carRouter.post("/addCar", addCar);
+carRouter.post("/addCar", carController.addCar);
 
 carRouter.use(accessRestrictedTo('admin'));
 carRouter.patch("/approveCar/:id", carController.approveCar);
