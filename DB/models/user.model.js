@@ -71,7 +71,10 @@ const userSchema = new mongoose.Schema(
         ref: "Car",
       },
     ],
-
+    driverLicense: {
+      type: String,
+      required: [true, "Please enter driver license"],
+    },
     passwordChangeDate: {
       type: Date,
       default: Date.now,
@@ -95,7 +98,6 @@ const userSchema = new mongoose.Schema(
     },
 
     isActive: {
-      // for marking false if want to suspend the user account
       type: Boolean,
       default: true,
       select: false,
@@ -103,7 +105,6 @@ const userSchema = new mongoose.Schema(
     wishlist: [{
       type: mongoose.Schema.ObjectId,
       ref: "Car",
-      unique: [true, 'Car already exists in the wishlist'],
     }],
     messages: [{
       type: mongoose.Schema.ObjectId,

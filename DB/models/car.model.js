@@ -78,10 +78,6 @@ const carSchema = new mongoose.Schema(
         type: String,
         required: [true, "Please Enter car insurance"],
       },
-      driverLicense: {
-        type: String,
-        required: [true, "Please Enter car license"],
-      },
       carLicense: {
         type: String,
         required: [true, "Please Enter car registration"],
