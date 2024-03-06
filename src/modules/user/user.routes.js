@@ -3,11 +3,11 @@ const userRouter = express.Router();
 import cookieParser from "cookie-parser";
 //-----------------------------
 // prettier-ignore
-import { getAllUsers, getUser, updateUser,deleteUser } from "./user.controller.js";
+import { getAllUsers, getUser, updateUser, deleteUser, clearWishlist, addToWishlist, removeFromWishlist } from "./user.controller.js";
 // prettier-ignore
-import { signup, login, logout, verifyAccount} from "./auth.controller.js";
+import { signup, login, logout, verifyAccount } from "./auth.controller.js";
 // prettier-ignore
-import {forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js"
+import { forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js"
 // prettier-ignore
 import { accessRestrictedTo, protect, addUserIdToURL } from "../../middleware/authMiddlewares.js";
 //----------------------------
@@ -31,6 +31,10 @@ userRouter
   .patch(addUserIdToURL, updateUser);
 
 userRouter.patch("/userProfile/updatePassword", updateMyPassword);
+userRouter.delete("/clearWishlist", clearWishlist);
+userRouter.route("/wishList")
+  .patch(addToWishlist)
+  .delete(removeFromWishlist);
 //------------------------------------------------------------
 //! follwing endpoint restricted to only admin
 userRouter.use(accessRestrictedTo("admin"));
@@ -39,9 +43,9 @@ userRouter.get("/", getAllUsers);
 
 // prettier-ignore
 userRouter
-.route("/:id")
-.get(getUser)
-.patch(updateUser)
-.delete(deleteUser);
+  .route("/:id")
+  .get(getUser)
+  .patch(updateUser)
+  .delete(deleteUser);
 //--------------------------
 export default userRouter;
