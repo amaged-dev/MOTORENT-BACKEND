@@ -8,6 +8,10 @@ import userRouter from "./src/modules/user/user.routes.js";
 import AppError from "./src/utils/appError.js";
 import { errorController } from "./src/utils/globalErrorHandler.js";
 import hpp from "hpp";
+import reviewRouter from "./src/modules/review/review.routes.js";
+import rentalRouter from "./src/modules/rental/rental.routes.js";
+import messagesRouter from "./src/modules/message/message.routes.js";
+import brandRouter from './src/modules/brand/brand.routes';
 
 const { window } = new JSDOM("");
 const DOMPurify = createDOMPurify(window);
@@ -48,6 +52,14 @@ export function appRouter(app, express) {
   app.use("/api/v1/users", userRouter);
   // cars
   app.use("/api/v1/cars", carRouter);
+  // reviews
+  app.use("/api/v1/reviews", reviewRouter);
+  // rentals
+  app.use("/api/v1/rentals", rentalRouter);
+  // messages
+  app.use("/api/v1/messages", messagesRouter);
+  // brands
+  app.use("/api/v1/brands", brandRouter);
 
   //Not Found
   app.all("*", (req, res, next) => {
