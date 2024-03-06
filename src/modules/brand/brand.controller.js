@@ -1,7 +1,7 @@
 import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
-import { createOne, deleteOne, updateOne } from "../controllers.factory.js";
+import { createOne, deleteOne, updateOne, getAll } from "../controllers.factory.js";
 import Brand from './../../../DB/models/brand.model.js';
 
 

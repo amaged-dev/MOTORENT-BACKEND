@@ -5,7 +5,6 @@ import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
 import { sendEmail } from "../../utils/email.js";
-import { signupTemp } from "../../utils/generateHTML.js";
 
 //-------------------------------
 const signToken = (user, expireWithin = process.env.JWT_EXPIRES_IN) => {
@@ -63,25 +62,9 @@ export const signup = catchAsync(async (req, res, next) => {
 
   const newUser = await User.create(req.body);
 
-  //? no need because of the validations before this step
-  // const newUser = await User.create({
-  //   // ? just pass to the schema model only the required data to save
-  //   firstName: req.body.firstName,
-  //   lastName: req.body.lastName,
-  //   email: req.body.email,
-  //   password: req.body.password,
-  //   passwordConfirm: req.body.passwordConfirm,
-  //   address: req.body.address,
-  //   phone: req.body.phone,
-  //   role: "user", // allow only user, to be admin need to change it from DB or admin updat it to admin
-  // });
-
   // make token expire within 15 minites
   const token = newUser.createVerifyEmailToken(15);
   await newUser.save({ validateBeforeSave: false });
-
-  // const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
-  // const html = signupTemp(url, newUser.firstName);
 
   const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
   const subject = "Verify Email link will expires whithin 15 minutes";

@@ -11,7 +11,7 @@ import hpp from "hpp";
 import reviewRouter from "./src/modules/review/review.routes.js";
 import rentalRouter from "./src/modules/rental/rental.routes.js";
 import messagesRouter from "./src/modules/message/message.routes.js";
-import brandRouter from './src/modules/brand/brand.routes';
+import brandRouter from "./src/modules/brand/brand.routes.js";
 
 const { window } = new JSDOM("");
 const DOMPurify = createDOMPurify(window);

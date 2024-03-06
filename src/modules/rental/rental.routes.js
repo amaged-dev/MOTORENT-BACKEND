@@ -1,6 +1,6 @@
 import express from 'express';
 import * as rentalControllers from './rental.controller.js';
-import { accessRestrictedTo, isCreatorUserOrAdmin, protect } from './../../middleware/authMiddlewares';
+import {accessRestrictedTo,isCreatorUserOrAdmin,protect} from './../../middleware/authMiddlewares.js';
 import Rental from '../../../DB/models/rental.model.js';
 const rentalRouter = express.Router();
 

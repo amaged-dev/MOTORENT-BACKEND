@@ -15,7 +15,6 @@ userRouter.use(cookieParser());
 //? routes
 userRouter.post("/login", login);
 userRouter.post("/signup", signup);
-userRouter.post("/logout", logout);
 
 userRouter.get("/verify/:token", verifyAccount);
 userRouter.post("/forgotPassword", forgotPassword);
@@ -24,6 +23,7 @@ userRouter.patch("/resetPassword/:token", resetPassword);
 //! All following end points need to be loged in to access
 
 userRouter.use(protect);
+userRouter.post("/logout", logout);
 
 userRouter
   .route("/userProfile") //? reference to loggedin user

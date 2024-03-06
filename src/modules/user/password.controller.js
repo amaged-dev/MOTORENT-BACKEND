@@ -1,11 +1,8 @@
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 import User from "../../../DB/models/user.model.js";
 import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
-import { sendData } from "../../utils/sendData.js";
 import { sendEmail } from "../../utils/email.js";
-import { resetPassTemp } from "../../utils/generateHTML.js";
 import { createSendToken } from "./auth.controller.js";
 
 //----------------------------------------------------------------
@@ -44,8 +41,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   //? 3- send email to the user with the reset pass token
-  // const url = `${process.env.BASE_URL}api/v1/users/resetPassword/${token}`;
-  // const resetPasswordHTML = resetPassTemp(url, newUser.firstName);
+
 
   const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/resetPassword/${resetToken}`;
   const subject = "Reset Password Token link will expires whithin 15 minutes";
