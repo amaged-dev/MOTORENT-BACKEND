@@ -33,8 +33,9 @@ export function getAll(Model) {
 // ! 2- get one by id
 export function getOne(Model, PopulateObj) {
   return catchAsync(async (req, res, next) => {
+    let filter = PopulateObj || {};
     let query = Model.findById(req.params.id);
-    if (PopulateObj) query = query.populate(PopulateObj);
+    if (filter) query = query.populate(filter);
     const document = await query;
 
     if (!document) {
