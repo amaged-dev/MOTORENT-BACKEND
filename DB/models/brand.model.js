@@ -6,6 +6,7 @@ const brandSchema = new mongoose.Schema({
         required: [true, "Brand name is required"],
         trim: true,
         uppercase: true,
+        unique: [true, "Brand name already exists"],
     },
 });
 const Brand = mongoose.model("Brand", brandSchema);
