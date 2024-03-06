@@ -1,35 +1,23 @@
 import express from "express";
-const carRouter = express.Router();
-//-----------------------------
-//? import controllers
-import {
-  getAllReviewsOnCar,
-  getReview,
-  updateReview,
-  deleteReview,
-  addReview,
-} from "./review.controller.js";
+import { isCreatorUserOrAdmin, protect } from "../../middleware/authMiddlewares.js";
+import { addReview, deleteReview, getAllReviewsOnCar, getReview, updateReview } from "./review.controller.js";
+import Review from "../../../DB/models/review.model.js";
 
-import {
-  protect,
-  isCreatorUserOrAdmin,
-} from "../../middleware/authMiddlewares.js";
+const reviewRouter = express.Router();
 
-//----------------------------
-//? routes
 
-carRouter.get("/getAllReviewsOnCar", getAllReviewsOnCar);
+reviewRouter.get("/getAllReviewsOnCar", getAllReviewsOnCar);
 
-carRouter.use(protect);
+reviewRouter.use(protect);
 
-carRouter.post("/addCar", addReview);
+reviewRouter.post("/add-review", addReview);
 
-carRouter.use(isCreatorUserOrAdmin);
+reviewRouter.use(isCreatorUserOrAdmin(Review, 'Review'));
 // prettier-ignore
-carRouter
+reviewRouter
   .route("/:id")
   .get(getReview)
   .patch(updateReview)
   .delete(deleteReview);
 //----------------------------
-export default carRouter;
+export default reviewRouter;
