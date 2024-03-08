@@ -13,11 +13,11 @@ import { accessRestrictedTo, protect, addUserIdToURL } from "../../middleware/au
 
 import { isValid } from '../../middleware/validation.js';
 
-import { idValidation, addUserValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, forgotPasswordValidation } from './user.validation.js'
+import { idValidation, addUserValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, forgotPasswordValidation, loginValidation } from './user.validation.js'
 //----------------------------
 userRouter.use(cookieParser());
 //? routes
-userRouter.post("/login", login);
+userRouter.post("/login", isValid(loginValidation), login);
 userRouter.post("/signup", isValid(addUserValidation), signup);
 
 userRouter.get("/verify/:token", verifyAccount);

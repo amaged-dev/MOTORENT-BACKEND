@@ -160,6 +160,7 @@ export const resetPasswordValidation = Joi.object({
 });
 
 export const updatePasswordValidation = Joi.object({
+
     currentPassword: Joi.string().required().trim().messages({
         'any.required': 'Current Password is requires',
         'string.empty': 'Must enter your current password',
