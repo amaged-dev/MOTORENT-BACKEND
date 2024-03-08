@@ -10,33 +10,38 @@ import { signup, login, logout, verifyAccount } from "./auth.controller.js";
 import { forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js"
 // prettier-ignore
 import { accessRestrictedTo, protect, addUserIdToURL } from "../../middleware/authMiddlewares.js";
+
+import { isValid } from '../../middleware/validation.js';
+
+import { idValidation, addUserValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, forgotPasswordValidation } from './user.validation.js'
 //----------------------------
 userRouter.use(cookieParser());
 //? routes
 userRouter.post("/login", login);
-userRouter.post("/signup", signup);
+userRouter.post("/signup", isValid(addUserValidation), signup);
 
 userRouter.get("/verify/:token", verifyAccount);
-userRouter.post("/forgotPassword", forgotPassword);
-userRouter.patch("/resetPassword/:token", resetPassword);
+userRouter.post("/forgotPassword", isValid(forgotPasswordValidation), forgotPassword);
+userRouter.patch("/resetPassword/:token", isValid(resetPasswordValidation), resetPassword);
 //----------------------------
-//! All following end points need to be loged in to access
+//! All following end points need to be logged in to access
 
 userRouter.use(protect);
 userRouter.post("/logout", logout);
 
 userRouter
-  .route("/userProfile") //? reference to loggedin user
+  .route("/userProfile")
   .get(addUserIdToURL, getUser)
-  .patch(addUserIdToURL, updateUser);
+  .patch(addUserIdToURL, isValid(updateUserValidation), updateUser);
 
-userRouter.patch("/userProfile/updatePassword", updateMyPassword);
+userRouter.patch("/userProfile/updatePassword", isValid(updatePasswordValidation), updateMyPassword);
+
 userRouter.delete("/clearWishlist", clearWishlist);
 userRouter.route("/wishList")
   .patch(addToWishlist)
   .delete(removeFromWishlist);
 //------------------------------------------------------------
-//! follwing endpoint restricted to only admin
+//! following endpoint restricted to only admin
 userRouter.use(accessRestrictedTo("admin"));
 
 userRouter.get("/", getAllUsers);
@@ -44,8 +49,8 @@ userRouter.get("/", getAllUsers);
 // prettier-ignore
 userRouter
   .route("/:id")
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+  .get(isValid(idValidation), getUser)
+  .patch(isValid(updateUserValidation), updateUser)
+  .delete(isValid(idValidation), deleteUser);
 //--------------------------
 export default userRouter;

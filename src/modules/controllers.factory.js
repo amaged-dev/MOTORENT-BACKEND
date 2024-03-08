@@ -57,6 +57,10 @@ export function updateOne(Model) {
     if (req.body.password || req.body.passwordConfirm) {
       return next(new AppError("this route is not for password update", 500));
     }
+
+    //? if the body have role and the logged in not admin then make it user role in the body
+    if (req.body.role && req.user.role === 'user') req.body.role = 'user';
+
     //? No need for select from the body because of the validation middleware
     const updatedDocument = await Model.findByIdAndUpdate(
       req.params.id,
