@@ -13,7 +13,7 @@ export const idValidation = Joi.object({
         }),
 });
 
-const addUserValidation = Joi.object({
+export const addUserValidation = Joi.object({
     firstName: Joi.string().required().trim().messages({
         'any.required': 'First name is requires',
         'string.empty': 'Must enter your first name',
@@ -83,7 +83,7 @@ const addUserValidation = Joi.object({
     })
 });
 
-const updateUserValidation = Joi.object({
+export const updateUserValidation = Joi.object({
     id: Joi.string()
         .custom(isValidObjectId, 'custom validation')
         .required()
@@ -138,7 +138,7 @@ const updateUserValidation = Joi.object({
 });
 
 
-const resetPasswordValidation = Joi.object({
+export const resetPasswordValidation = Joi.object({
     password: Joi.string().required().trim().min(8).pattern(
         new RegExp(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]+$/
@@ -159,7 +159,7 @@ const resetPasswordValidation = Joi.object({
         })
 });
 
-const updatePasswordValidation = Joi.object({
+export const updatePasswordValidation = Joi.object({
     currentPassword: Joi.string().required().trim().messages({
         'any.required': 'Current Password is requires',
         'string.empty': 'Must enter your current password',
@@ -191,4 +191,16 @@ export const forgotPasswordValidation = Joi.object({
         'string.empty': 'Must enter your email',
         'string.email': 'Email must be a valid email address',
     })
+})
+export const loginValidation = Joi.object({
+    email: Joi.string().email().required().trim().lowercase().messages({
+        'any.required': 'Email is requires',
+        'string.empty': 'Must enter your email',
+        'string.email': 'Email must be a valid email address',
+    }),
+
+    password: Joi.string().required().messages({
+        'any.required': 'password is requires',
+        'string.empty': 'Must enter your password',
+    }),
 })
