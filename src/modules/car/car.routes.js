@@ -5,6 +5,7 @@ import * as carController from "./car.controller.js";
 import { isValid } from "../../middleware/validation.js";
 import { addCarValidation, idValidation, updateCarValidation } from "./car.validation.js";
 import { fileUpload, filterObject } from "../../utils/multer.js";
+import { collectDocumentKeysInObject } from "../../middleware/collectKeysInObject.js";
 
 //----------------------------------------------------------
 const carRouter = express.Router();
@@ -21,7 +22,10 @@ carRouter.get("/getTop5ExpensiveCars", carController.getTop5ExpensiveCars);
 carRouter.use(protect);
 carRouter.post("/addCar", fileUpload(filterObject.image).fields([
     { name: "images", maxCount: 5 },
-]), isValid(addCarValidation), carController.addCar);
+    { name: 'doc-insurance', maxCount: 1 },
+    { name: "doc-carLicense", maxCount: 1 },
+    { name: "doc-carInspection", maxCount: 1 },
+]), isValid(addCarValidation), collectDocumentKeysInObject, carController.addCar);
 
 carRouter.use(accessRestrictedTo('admin'));
 carRouter.patch("/approveCar/:id", isValid(idValidation), carController.approveCar);
