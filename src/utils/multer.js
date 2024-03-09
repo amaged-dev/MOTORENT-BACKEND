@@ -1,5 +1,5 @@
 import multer, { diskStorage } from "multer";
-import { AppError } from "./appError.js";
+import AppError from "./appError.js";
 
 export const filterObject = {
     image: ['image/png', 'image/jpeg', 'image/jpg'],
