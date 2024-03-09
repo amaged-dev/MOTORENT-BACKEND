@@ -4,6 +4,7 @@ import { accessRestrictedTo, isCreatorUserOrAdmin, protect } from "../../middlew
 import * as carController from "./car.controller.js";
 import { isValid } from "../../middleware/validation.js";
 import { addCarValidation, idValidation, updateCarValidation } from "./car.validation.js";
+import { fileUpload, filterObject } from "../../utils/multer.js";
 
 //----------------------------------------------------------
 const carRouter = express.Router();
@@ -18,7 +19,9 @@ carRouter.get("/getTop5CheapestCars", carController.getTop5CheapestCars);
 carRouter.get("/getTop5ExpensiveCars", carController.getTop5ExpensiveCars);
 
 carRouter.use(protect);
-carRouter.post("/addCar", isValid(addCarValidation), carController.addCar);
+carRouter.post("/addCar", fileUpload(filterObject.image).fields([
+    { name: "images", maxCount: 5 },
+]), isValid(addCarValidation), carController.addCar);
 
 carRouter.use(accessRestrictedTo('admin'));
 carRouter.patch("/approveCar/:id", isValid(idValidation), carController.approveCar);
@@ -31,6 +34,6 @@ carRouter.use(isCreatorUserOrAdmin(Car, "Car"));
 carRouter.route("/:id")
     .get(isValid(idValidation), carController.getCar)
     .patch(isValid(updateCarValidation), carController.updateCar)
-    .delete(isValid(idValidation), carController.deleteCar)
+    .delete(isValid(idValidation), carController.deleteCar);
 
 export default carRouter;
