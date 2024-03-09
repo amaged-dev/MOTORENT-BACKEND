@@ -62,8 +62,12 @@ export const addCarValidation = Joi.object({
             'number.base': 'Average KM must be a number'
         }),
 
-    transmission: Joi.string()
-        .valid("auto", "manual"),
+    transmission: Joi.string().required()
+        .valid("auto", "manual").messages({
+            'any.required': 'Car transmission is required',
+            'string.base': 'transmission name must be a string',
+            'any.only': 'Invalid car transmission'
+        }),
 
     capacity: Joi.number()
         .required()

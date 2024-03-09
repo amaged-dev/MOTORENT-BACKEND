@@ -36,7 +36,10 @@ const carSchema = new mongoose.Schema(
       required: [true, "Car average KM is required"],
     },
     transmission: {
+      type: String,
       enum: ["auto", "manual"],
+      required: [true, "Car transmission is required"],
+      default: "auto",
     },
     capacity: {
       type: Number,
