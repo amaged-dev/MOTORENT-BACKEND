@@ -65,15 +65,8 @@ const populateObj = [
   },
 ];
 
-export const getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find()
 
-  if (!users) {
-    return next(new AppError(`user id is not exists`, 404));
-  }
-  sendData(200, "success", "All users fetched successfully", users, res);
-});
-// export const getAllUsers = getAll(User);
+export const getAllUsers = getAll(User);
 
 export const getUser = getOne(User, populateObj);
 

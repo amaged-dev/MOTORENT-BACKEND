@@ -7,7 +7,7 @@ import { sendData } from "../utils/sendData.js";
 //! 1- get All
 export function getAll(Model) {
   return catchAsync(async (req, res, next) => {
-    let filterCarId = {};
+    let filterReviewId = {};
 
     if (req.params.carId) filterCarId = { car: req.params.carId };
 
