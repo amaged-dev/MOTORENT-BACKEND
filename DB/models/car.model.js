@@ -121,6 +121,7 @@ const carSchema = new mongoose.Schema(
       min: 1,
       max: 5,
     },
+    cloudFolder: { type: String, unique: true }
   },
   {
     timestamps: true,

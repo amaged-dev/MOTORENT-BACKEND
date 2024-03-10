@@ -48,7 +48,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
   //? 2-verify token ( decode the token and check if it is same id)
 
-  console.log("token*****", token);
+  // console.log("token*****", token);
   const decodeToken = await promisify(jwt.verify)(token, process.env.JWT_KEY);
 
   //? 3- check if user still exists

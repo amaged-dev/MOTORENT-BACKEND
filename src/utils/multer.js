@@ -10,6 +10,7 @@ export const filterObject = {
 
 export const fileUpload = (filterArray) => {
     const fileFilter = (req, file, cb) => {
+        console.log(file);
         if (!filterArray.includes(file.mimetype)) {
             return cb(new AppError("Invalid file format!"), false);
         }

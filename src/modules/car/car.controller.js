@@ -38,12 +38,13 @@ export const addCar = catchAsync(async (req, res, next) => {
         const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.FOLDER_CLOUD_CARS}/documents/${cloudFolder}` });
         documentObj[key] = { id: public_id, url: secure_url };
       }
-      documents = { ...documents, ...documentObj }
+      documents = { ...documents, ...documentObj };
     }
   }
-  console.log(documents, "documents")
+  // console.log(documents, "documents")
   const newCar = await Car.create({
     ...req.body,
+    cloudFolder,
     images,
     documents,
   });
@@ -186,6 +187,78 @@ export const getCarsByManufacturingYear = catchAsync(async (req, res, next) => {
   sendData(200, "success", "Requested data successfully fetched", cars, res);
 });
 
+export const updateCar = catchAsync(async (req, res, next) => {
+  // check car existence
+  const isExist = await Car.findById(req.params.id);
+  if (!isExist) return next(new AppError(`car id is not exists`, 404));
+
+  if (!req.files) return next(new AppError("Product Images are required!", 400));
+
+  const imagesArray = isExist.images;
+
+  const ids = imagesArray.map((imageObject) => imageObject.id);
+
+  // delete the old images from cloudinary
+  const result = await cloudinary.api.delete_resources(ids);
+  // delete image folder
+  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/cars/${isExist.cloudFolder}`);
+
+  // create unique folder name
+  const cloudFolder = nanoid();
+
+  let images = [];
+  // upload images 
+  for (const file of req.files.images) {
+    const { secure_url, public_id } = await cloudinary.uploader.upload(file.path,
+      { folder: `${process.env.FOLDER_CLOUD_CARS}/cars/${cloudFolder}` });
+    images.push({ id: public_id, url: secure_url });
+  }
+
+  let documents = {};
+  for (const documentObj of req.files.documents) {
+    for (const key in documentObj) {
+      const files = documentObj[key];
+      for (const file of files) {
+        const { secure_url, public_id } = await cloudinary.uploader.upload(file.path, { folder: `${process.env.FOLDER_CLOUD_CARS}/documents/${cloudFolder}` });
+        documentObj[key] = { id: public_id, url: secure_url };
+      }
+      documents = { ...documents, ...documentObj };
+    }
+  }
+  // console.log(documents, "documents")
+  const updatedCar = await Car.findByIdAndUpdate(req.params.id, {
+    ...req.body,
+    images,
+    documents,
+  });
+  if (!updatedCar) {
+    return next(new AppError(`car id is not exists`, 404));
+  }
+  sendData(200, "success", "Car updated successfully", updatedCar, res);
+});
+
+export const deleteCar = catchAsync(async (req, res, next) => {
+  console.log("ksom isreal");
+  // check car existence
+  const isExist = await Car.findById(req.params.id);
+  if (!isExist) return next(new AppError(`car id is not exists`, 404));
+
+  const imagesArray = isExist.images;
+
+  const ids = imagesArray.map((imageObject) => imageObject.id);
+  console.log(process.env.FOLDER_CLOUD_CARS, "process.env.FOLDER_CLOUD_NAME");
+  // delete the old images from cloudinary
+  const result = await cloudinary.api.delete_resources(ids);
+  // delete image folder
+  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/cars/${isExist.cloudFolder}`);
+
+  const car = await Car.findByIdAndDelete(req.params.id);
+  if (!car) {
+    return next(new AppError(`car id is not exists`, 404));
+  }
+  sendData(200, "success", "Car deleted successfully", null, res);
+});
+
 const populateObj = [
   {
     path: "rentedCars",
@@ -201,8 +274,8 @@ export const getAllCars = getAll(Car);
 
 export const getCar = getOne(Car, populateObj);
 
-export const deleteCar = deleteOne(Car);
+// export const deleteCar = deleteOne(Car);
 
-export const updateCar = updateOne(Car);
+// export const updateCar = updateOne(Car);
 
 // export const addCar = createOne(Car);

@@ -2,6 +2,7 @@ import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
 dotenv.config();
 
+// console.log(process.env.CLOUD_NAME, process.env.API_KEY, process.env.API_SECRET);
 
 cloudinary.config({
   cloud_name: 'dmwmwsuws',

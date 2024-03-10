@@ -6,15 +6,6 @@ export const idValidation = Joi.object({
 });
 
 export const createMessageValidation = Joi.object({
-    user: Joi.string()
-        .required()
-        .custom(isValidObjectId, 'custom validation')
-        .messages({
-            'any.required': 'The message should belong to a user',
-            'string.base': 'User must be a string',
-            'custom.validation': 'Invalid user ObjectId'
-        }),
-
     title: Joi.string()
         .required()
         .messages({

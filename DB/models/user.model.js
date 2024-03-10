@@ -175,7 +175,7 @@ userSchema.methods.createResetPasswordToken = function (
 
 //? to check if the paswword changed time after the toked created time or not.
 userSchema.methods.IsPasswordChangedAfter = function (JWTCreatedTimeStamp) {
-  console.log(this.passwordChangeDate, JWTCreatedTimeStamp);
+  // console.log(this.passwordChangeDate, JWTCreatedTimeStamp);
   const passwordChangeTime = this.passwordChangeDate.getTime() / 1000;
   return passwordChangeTime > JWTCreatedTimeStamp;
 };

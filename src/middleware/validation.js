@@ -11,7 +11,7 @@ export const isValidObjectId = (value, helper) => {
 
 export const isValid = (schema) => {
     return (req, res, next) => {
-        console.log(req.params);
+        // console.log(req.params);
         const reqCopy = { ...req.body, ...req.params, ...req.query };
         const validationResult = schema.validate(reqCopy, { abortEarly: false });
 

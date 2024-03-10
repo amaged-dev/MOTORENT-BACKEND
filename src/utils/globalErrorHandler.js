@@ -33,7 +33,7 @@ const sendErrProduction = (err, res) => {
         });
     } else {
         //log the error
-        console.log('error', err.message);
+        // console.log('error', err.message);
         // send a dummy res to the client
         res.status(500).json({
             status: 'error',

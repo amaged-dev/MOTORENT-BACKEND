@@ -85,7 +85,7 @@ export const signup = catchAsync(async (req, res, next) => {
       message: " Verify Email link Sent To your Email",
     });
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     //? remove the verify token from the user object and save it
     newUser.verifyEmailToken = undefined;
     newUser.verifyEmailExpires = undefined;
@@ -148,7 +148,7 @@ export const login = catchAsync(async (req, res, next) => {
   }
 
   if (!user.isVerified) {
-    console.log(user, "login");
+    // console.log(user, "login");
     return next(new AppError("Please verify your email", 401));
   }
 

@@ -3,8 +3,8 @@ import * as messagesController from './message.controller.js';
 import { accessRestrictedTo, protect } from './../../middleware/authMiddlewares.js';
 
 import { isValid } from '../../middleware/validation.js';
-import { idValidation, createMessageValidation, updateMessageValidation } from './message.validation.js'
-
+import { idValidation, createMessageValidation, updateMessageValidation } from './message.validation.js';
+import { fileUpload, filterObject } from './../../utils/multer.js';
 
 
 const messagesRouter = express.Router();
@@ -12,7 +12,9 @@ const messagesRouter = express.Router();
 messagesRouter.use(protect);
 
 messagesRouter.route("/")
-    .post(accessRestrictedTo('user'), isValid(createMessageValidation), messagesController.sendMessage)
+    .post(accessRestrictedTo('user', 'admin'),
+        fileUpload(filterObject.image).single('attachments'),
+        isValid(createMessageValidation), messagesController.sendMessage)
     .get(accessRestrictedTo('user'), messagesController.getMyMessages);
 
 messagesRouter.use(accessRestrictedTo('admin'));

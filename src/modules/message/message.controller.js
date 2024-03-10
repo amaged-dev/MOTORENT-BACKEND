@@ -3,6 +3,8 @@ import AppError from '../../utils/appError.js';
 import catchAsync from '../../utils/catchAsync.js';
 import { sendData } from '../../utils/sendData.js';
 import { deleteOne, getAll } from './../controllers.factory.js';
+import cloudinary from './../../utils/cloud.js';
+import { nanoid } from 'nanoid';
 
 export const getMyMessages = catchAsync(async (req, res, next) => {
     const messages = await Message.find({ $or: [{ _id: req.user.id }, { driverLicense: req.user.driverLicense }] });
@@ -35,8 +37,21 @@ export const addReplay = catchAsync(async (req, res, next) => {
 });
 //LINK - This function will be edit to add cloudinary image upload
 export const sendMessage = catchAsync(async (req, res, next) => {
+
+    console.log("Hello world");
+
     req.body.user = req.user.id;
-    const message = await Message.create(req.body);
+
+    console.log(req.file, "req.file");
+    // create unique folder name
+    const cloudFolder = nanoid();
+
+    const { public_id, secure_url } = await cloudinary.uploader.upload(req.file.path, { folder: `${process.env.FOLDER_CLOUD_MESSAGES}/documents/${cloudFolder}` });
+
+    const message = await Message.create({
+        ...req.body,
+        attachments: { id: public_id, url: secure_url }
+    });
     sendData(201, "success", "Message sent successfully", message, res);
 });
 

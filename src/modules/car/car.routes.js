@@ -9,7 +9,7 @@ import { collectDocumentKeysInObject } from "../../middleware/collectKeysInObjec
 
 //----------------------------------------------------------
 const carRouter = express.Router();
-
+carRouter.delete('/:id', isValid(idValidation), carController.deleteCar);
 carRouter.get("/", carController.getAllCars);
 carRouter.get("/getCarsByManufacturingYear", carController.getCarsByManufacturingYear);
 carRouter.get("/getCarsByCategory", carController.getCarsByCategory);
@@ -37,7 +37,7 @@ carRouter.use(isCreatorUserOrAdmin(Car, "Car"));
 
 carRouter.route("/:id")
     .get(isValid(idValidation), carController.getCar)
-    .patch(isValid(updateCarValidation), carController.updateCar)
-    .delete(isValid(idValidation), carController.deleteCar);
+    .patch(isValid(updateCarValidation), carController.updateCar);
+
 
 export default carRouter;
