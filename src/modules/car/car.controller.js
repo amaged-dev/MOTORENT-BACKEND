@@ -23,7 +23,7 @@ export const addCar = catchAsync(async (req, res, next) => {
   // upload images 
   for (const file of req.files.images) {
     const { secure_url, public_id } = await cloudinary.uploader.upload(file.path,
-      { folder: `${process.env.FOLDER_CLOUD_CARS}/cars/${cloudFolder}` });
+      { folder: `${process.env.FOLDER_CLOUD_CARS}/images/${cloudFolder}` });
     images.push({ id: public_id, url: secure_url });
   }
 
@@ -192,7 +192,7 @@ export const updateCar = catchAsync(async (req, res, next) => {
   const isExist = await Car.findById(req.params.id);
   if (!isExist) return next(new AppError(`car id is not exists`, 404));
 
-  if (!req.files) return next(new AppError("Product Images are required!", 400));
+  if (!req.files) return next(new AppError("car Images are required!", 400));
 
   const imagesArray = isExist.images;
 
@@ -201,7 +201,7 @@ export const updateCar = catchAsync(async (req, res, next) => {
   // delete the old images from cloudinary
   const result = await cloudinary.api.delete_resources(ids);
   // delete image folder
-  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/cars/${isExist.cloudFolder}`);
+  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/images/${isExist.cloudFolder}`);
 
   // create unique folder name
   const cloudFolder = nanoid();
