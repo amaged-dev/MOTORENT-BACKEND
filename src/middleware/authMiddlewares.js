@@ -96,14 +96,13 @@ export const isCreatorUserOrAdmin = (Model, modelName) => {
   return catchAsync(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
     if (!document)
-      return next(new AppError(res, `This ${modelName} is not found`, 401));
+      return next(new AppError(`This ${modelName} is not found`, 500));
     if (
       req.user.role !== "admin" &&
       String(document.createdBy) !== String(req.user._id)
     ) {
       return next(
         new AppError(
-          res,
           `Only Admin or createrUser can perform this to ${modelName}`,
           401
         )

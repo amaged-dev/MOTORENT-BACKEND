@@ -171,48 +171,36 @@ export const updateCarValidation = Joi.object({
     id: Joi.string().custom(isValidObjectId).required(),
 
     manufacturingYear: Joi.number()
-        .required()
         .messages({
-            'any.required': 'Car manufacturing year is required',
             'number.base': 'Manufacturing year must be a number'
         }),
 
     model: Joi.string()
-        .required()
         .trim()
         .messages({
-            'any.required': 'Car model is required',
             'string.base': 'Model must be a string'
         }),
 
     brand: Joi.string()
-        .required()
         .messages({
-            'any.required': 'Car brand is required',
             'string.base': 'Brand ID must be a string'
         }),
 
     category: Joi.string()
         .valid("SUV", "Sedan", "Hatchback", "Coupe", "Convertible", "Wagon")
-        .required()
         .default("Sedan")
         .messages({
-            'any.required': 'Car category is required',
             'string.base': 'Category must be a string',
             'any.only': 'Invalid car category'
         }),
 
     tankCapacity: Joi.number()
-        .required()
         .messages({
-            'any.required': 'Car tank capacity is required',
             'number.base': 'Tank capacity must be a number'
         }),
 
     average: Joi.number()
-        .required()
         .messages({
-            'any.required': 'Car average KM is required',
             'number.base': 'Average KM must be a number'
         }),
 
@@ -250,8 +238,8 @@ export const updateCarValidation = Joi.object({
 
     images: Joi.array()
         .items(Joi.object({
-            id: Joi.string().required(),
-            url: Joi.string().required()
+            id: Joi.string(),
+            url: Joi.string()
         })),
 
     rating: Joi.number()

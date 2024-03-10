@@ -18,10 +18,9 @@ rentalRouter.get('/getRentalsByDate', rentalControllers.getRentalsByDate);
 
 rentalRouter.get('/getAllRentals', accessRestrictedTo('admin'), rentalControllers.getAllRentals);
 
-rentalRouter.use(isCreatorUserOrAdmin(Rental, 'Rental'))
-rentalRouter.get('/getMyRentals', rentalControllers.getMyRentals);
+rentalRouter.get('/getMyRentals', isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getMyRentals);
 rentalRouter.route("/:id")
-    .get(isValid(idValidation), rentalControllers.getOneRental)
-    .delete(isValid(idValidation), rentalControllers.deleteOneRental)
+    .get(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getOneRental)
+    .delete(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.deleteOneRental)
 
 export default rentalRouter;

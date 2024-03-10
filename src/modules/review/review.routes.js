@@ -13,12 +13,11 @@ reviewRouter.use(protect);
 
 reviewRouter.post("/addReview", isValid(addReviewValidation), addReview);
 
-reviewRouter.use(isCreatorUserOrAdmin(Review, 'Review'));
 // prettier-ignore
 reviewRouter
   .route("/:id")
-  .get(isValid(idValidation), getReview)
-  .patch(isValid(updateReviewValidation), updateReview)
-  .delete(isValid(idValidation), deleteReview);
+  .get(isCreatorUserOrAdmin(Review, 'Review'), isValid(idValidation), getReview)
+  .patch(isCreatorUserOrAdmin(Review, 'Review'), isValid(updateReviewValidation), updateReview)
+  .delete(isCreatorUserOrAdmin(Review, 'Review'), isValid(idValidation), deleteReview);
 //----------------------------
 export default reviewRouter;

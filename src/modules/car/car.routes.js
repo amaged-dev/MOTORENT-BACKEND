@@ -9,7 +9,7 @@ import { collectDocumentKeysInObject } from "../../middleware/collectKeysInObjec
 
 //----------------------------------------------------------
 const carRouter = express.Router();
-carRouter.delete('/:id', isValid(idValidation), carController.deleteCar);
+
 carRouter.get("/", carController.getAllCars);
 carRouter.get("/getCarsByManufacturingYear", carController.getCarsByManufacturingYear);
 carRouter.get("/getCarsByCategory", carController.getCarsByCategory);
@@ -33,11 +33,16 @@ carRouter.patch("/declineCar/:id", isValid(idValidation), carController.declineC
 carRouter.patch("/suspendCar/:id", isValid(idValidation), carController.suspendCar);
 carRouter.patch("/activateCar/:id", isValid(idValidation), carController.activateCar);
 
-carRouter.use(isCreatorUserOrAdmin(Car, "Car"));
 
 carRouter.route("/:id")
-    .get(isValid(idValidation), carController.getCar)
-    .patch(isValid(updateCarValidation), carController.updateCar);
+    .get(isCreatorUserOrAdmin(Car, "Car"), isValid(idValidation), carController.getCar)
+    .delete(isCreatorUserOrAdmin(Car, "Car"), isValid(idValidation), carController.deleteCar)
+    .patch(isCreatorUserOrAdmin(Car, "Car"), fileUpload(filterObject.image).fields([
+        { name: "images", maxCount: 5 },
+        { name: 'doc-insurance', maxCount: 1 },
+        { name: "doc-carLicense", maxCount: 1 },
+        { name: "doc-carInspection", maxCount: 1 },
+    ]), isValid(updateCarValidation), collectDocumentKeysInObject, carController.updateCar);
 
 
 export default carRouter;
