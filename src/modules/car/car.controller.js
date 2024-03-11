@@ -238,7 +238,6 @@ export const updateCar = catchAsync(async (req, res, next) => {
 });
 
 export const deleteCar = catchAsync(async (req, res, next) => {
-  console.log("ksom isreal");
   // check car existence
   const isExist = await Car.findById(req.params.id);
   if (!isExist) return next(new AppError(`car id is not exists`, 404));
@@ -279,3 +278,6 @@ export const getCar = getOne(Car, populateObj);
 // export const updateCar = updateOne(Car);
 
 // export const addCar = createOne(Car);
+//NOTE - top 5 categories by rent
+//NOTE - top 5 cars by rent
+//NOTE - top cars by rent descending
