@@ -7,13 +7,15 @@ import cloudinary from './../../utils/cloud.js';
 import { nanoid } from 'nanoid';
 
 export const getMyMessages = catchAsync(async (req, res, next) => {
-    const messages = await Message.find({ $or: [{ _id: req.user.id }, { driverLicense: req.user.driverLicense }] });
+    // const messages = await Message.find({ $or: [{ _id: req.body.id }, { driverLicense: req.body.driverLicense }] });
+    const messages = await Message.find({ user: req.user.id });
     if (!messages) return next(new AppError("No messages found", 404));
     sendData(200, "success", null, messages, res);
 });
 
 export const getUserMessages = catchAsync(async (req, res, next) => {
-    const messages = await Message.find({ $or: [{ _id: req.body.id }, { driverLicense: req.body.driverLicense }] });
+    // const messages = await Message.find({ $or: [{ _id: req.body.id }, { driverLicense: req.body.driverLicense }] });
+    const messages = await Message.find({ user: req.params.userId });
     if (!messages) return next(new AppError("No messages found", 404));
     sendData(200, "success", null, messages, res);
 });

@@ -39,12 +39,17 @@ export const createMessageValidation = Joi.object({
 });
 
 export const updateMessageValidation = Joi.object({
+    id: Joi.string().custom(isValidObjectId).required(),
 
     status: Joi.string()
         .valid('solved', 'pending')
         .default('pending')
         .messages({
             'any.only': 'Status must be either "solved" or "pending"',
+        }),
+    body: Joi.string()
+        .messages({
+            'string.base': 'Body must be a string'
         }),
 
     replay: Joi.string().messages({
