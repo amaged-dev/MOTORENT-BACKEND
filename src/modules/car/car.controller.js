@@ -42,7 +42,7 @@ export const addCar = catchAsync(async (req, res, next) => {
       documents = { ...documents, ...documentObj };
     }
   }
-  // console.log(documents, "documents")
+
   const newCar = await Car.create({
     ...req.body,
     cloudFolder,
@@ -62,7 +62,7 @@ export const approveCar = catchAsync(async (req, res, next) => {
   if (!car) {
     return next(new AppError(`car id is not exists`, 404));
   }
-  sendData(200, "success", "Car Approved Successfully", null, res);
+  sendData(200, "success", "Car Approved Successfully", car, res);
 });
 
 //----------------------------------------------
@@ -88,7 +88,7 @@ export const suspendCar = catchAsync(async (req, res, next) => {
   if (!car) {
     return next(new AppError(`car id is not exists`, 404));
   }
-  sendData(200, "success", "Car Suspended Successfully", null, res);
+  sendData(200, "success", "Car Suspended Successfully", car, res);
 });
 
 //----------------------------------------------
@@ -101,7 +101,7 @@ export const activateCar = catchAsync(async (req, res, next) => {
   if (!car) {
     return next(new AppError(`car id is not exists`, 404));
   }
-  sendData(200, "success", "Car Activated Successfully", null, res);
+  sendData(200, "success", "Car Activated Successfully", car, res);
 });
 
 //----------------------------------------------
@@ -308,7 +308,3 @@ const populateObj = [
 export const getAllCars = getAll(Car);
 
 export const getCar = getOne(Car, populateObj);
-
-//NOTE - top 5 categories by rent
-//NOTE - top 5 cars by rent
-//NOTE - top cars by rent descending
