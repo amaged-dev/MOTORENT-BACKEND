@@ -6,15 +6,6 @@ export const idValidation = Joi.object({
 });
 
 export const rentalValidation = Joi.object({
-    renterId: Joi.string()
-        .required()
-        .custom(isValidObjectId, 'custom validation')
-        .messages({
-            'any.required': 'RenterId is required',
-            'string.base': 'RenterId must be a string',
-            'custom.validation': 'Invalid renterId ObjectId'
-        }),
-
     car: Joi.string()
         .required()
         .custom(isValidObjectId, 'custom validation')
@@ -37,11 +28,4 @@ export const rentalValidation = Joi.object({
             'any.required': 'Rental to date is required',
             'date.base': 'Rental to date must be a valid date'
         }),
-
-    finalPrice: Joi.number()
-        .required()
-        .messages({
-            'any.required': 'Rental final price is required',
-            'number.base': 'Rental final price must be a number'
-        })
 });

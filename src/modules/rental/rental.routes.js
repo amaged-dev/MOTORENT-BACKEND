@@ -4,7 +4,7 @@ import { accessRestrictedTo, isCreatorUserOrAdmin, protect } from './../../middl
 import Rental from '../../../DB/models/rental.model.js';
 
 import { isValid } from '../../middleware/validation.js';
-import { idValidation, rentalValidation } from './rental.validation.js'
+import { idValidation, rentalValidation } from './rental.validation.js';
 //----------------------------------------
 const rentalRouter = express.Router();
 
@@ -16,11 +16,14 @@ rentalRouter.get('/getRentalsByUserId', rentalControllers.getRentalsByUserId);
 rentalRouter.get('/getRentalsByCarId', rentalControllers.getRentalsByCarId);
 rentalRouter.get('/getRentalsByDate', rentalControllers.getRentalsByDate);
 
+rentalRouter.get('/getTopCars', rentalControllers.getTopCars);
+rentalRouter.get('/getTopCarsByRent', rentalControllers.getTopCarsByRent);
+rentalRouter.get('/getTopCategories', accessRestrictedTo('admin'), rentalControllers.getTopCategories);
 rentalRouter.get('/getAllRentals', accessRestrictedTo('admin'), rentalControllers.getAllRentals);
 
 rentalRouter.get('/getMyRentals', isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getMyRentals);
 rentalRouter.route("/:id")
     .get(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getOneRental)
-    .delete(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.deleteOneRental)
+    .delete(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.deleteOneRental);
 
 export default rentalRouter;

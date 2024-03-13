@@ -35,13 +35,14 @@ export const getRentalsByDate = catchAsync(async (req, res, next) => {
 });
 
 export const createRental = catchAsync(async (req, res, next) => {
+    req.body.renterId = req.user._id;
     // check car existence
-    const carExist = await Car.findById(req.body.carId);
+    const carExist = await Car.findById(req.body.car);
     if (!carExist) {
         return next(new AppError("Car not found", 404));
     }
     // check if the car is available
-    const carAvailable = await Car.findById(req.body.carId);
+    const carAvailable = await Car.findById(req.body.car);
     if (carAvailable.status !== "available") {
         return next(new AppError("Car not available right now", 404));
     }
@@ -57,6 +58,10 @@ export const createRental = catchAsync(async (req, res, next) => {
     const price = differenceInDays * carExist.priceForDay;
     req.body.finalPrice = price;
     const rental = await Rental.create(req.body);
+
+    // update car status
+    await Car.findByIdAndUpdate(req.body.car, { status: "rented" }, { new: true });
+
     sendData(201, "success", "Rental created successfully", rental, res);
 });
 
@@ -66,6 +71,125 @@ export const getMyRentals = catchAsync(async (req, res, next) => {
         return next(new AppError("No rentals found for this user", 404));
     }
     sendData(200, "success", "My rentals fetched successfully", myRentals, res);
+});
+
+// top 5 categories by rent
+export const getTopCategories = catchAsync(async (req, res, next) => {
+    const topCategories = await Rental.aggregate([
+        {
+            $lookup: {
+                from: "cars", // the name of the Car collection
+                localField: "car",
+                foreignField: "_id",
+                as: "car"
+            }
+        },
+        {
+            $unwind: "$car"
+        },
+        {
+            $group: {
+                _id: "$car.category", // group by category
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { count: -1 }
+        },
+        {
+            $project: {
+                _id: 0,
+                category: "$_id",
+                count: 1
+            }
+        }
+    ]);
+    sendData(200, "success", "Top categories fetched successfully", topCategories, res);
+});
+// top 5 cars by rent and return the full car info
+export const getTopCars = catchAsync(async (req, res, next) => {
+    const topCars = await Rental.aggregate([
+        {
+            $group: {
+                _id: "$car",
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { count: -1 }
+        },
+        {
+            $limit: 5
+        },
+        {
+            $lookup: {
+                from: "cars", // the name of the Car collection
+                localField: "_id",
+                foreignField: "_id",
+                as: "car"
+            }
+        },
+        {
+            $unwind: "$car"
+        },
+        {
+            $lookup: {
+                from: "brands", // the name of the Brand collection
+                localField: "car.brand",
+                foreignField: "_id",
+                as: "car.brand"
+            }
+        },
+        {
+            $unwind: "$car.brand"
+        },
+        {
+            $project: {
+                'car.__v': 0,
+                'car.brand.__v': 0,
+                'car.cloudFolder': 0,
+                'car.createdAt': 0,
+                'car.updatedAt': 0,
+            }
+        },
+    ]);
+    sendData(200, "success", "Top cars fetched successfully", topCars, res);
+});
+// top cars by rent descending
+export const getTopCarsByRent = catchAsync(async (req, res, next) => {
+    const topCars = await Rental.aggregate([
+        {
+            $group: {
+                _id: "$car",
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { count: -1 }
+        },
+        {
+            $lookup: {
+                from: "cars", // the name of the Car collection
+                localField: "_id",
+                foreignField: "_id",
+                as: "car"
+            }
+        },
+        {
+            $unwind: "$car"
+        },
+        {
+            $project: {
+                '_id': 0,
+                'car.__v': 0,
+                'car.brand.__v': 0,
+                'car.cloudFolder': 0,
+                'car.createdAt': 0,
+                'car.updatedAt': 0,
+            }
+        },
+    ]);
+    sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
 });
 
 export const getAllRentals = getAll(Rental);
