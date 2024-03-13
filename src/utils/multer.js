@@ -2,7 +2,7 @@ import multer, { diskStorage } from "multer";
 import AppError from "./appError.js";
 
 export const filterObject = {
-    image: ['image/png', 'image/jpeg', 'image/jpg'],
+    image: ['image/png', 'image/jpeg', 'image/jpg', 'image/avif'],
     pdf: ['application/pdf'],
     video: ['video/mp4'],
     excel: ['file/xlsx']
