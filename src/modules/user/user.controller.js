@@ -57,16 +57,16 @@ export const getAllUserCars = catchAsync(async (req, res, next) => {
 const populateObj = [
   {
     path: "rentedCars",
-    select: "-__v -id",
+    select: "-__v",
   },
   {
     path: "ownedCars",
-    select: "-__v -id",
+    select: "-__v",
   },
 ];
 
 
-export const getAllUsers = getAll(User);
+export const getAllUsers = getAll(User, populateObj);
 
 export const getUser = getOne(User, populateObj);
 
