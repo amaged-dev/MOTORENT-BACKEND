@@ -80,6 +80,10 @@ export const addUserValidation = Joi.object({
     driverLicense: Joi.string().required().messages({
         'any.required': 'Please enter your driver license',
         'string.empty': 'Please enter your driver license'
+    }),
+    image: Joi.object({
+        id: Joi.string(),
+        url: Joi.string()
     })
 });
 
@@ -192,7 +196,7 @@ export const forgotPasswordValidation = Joi.object({
         'string.empty': 'Must enter your email',
         'string.email': 'Email must be a valid email address',
     })
-})
+});
 export const loginValidation = Joi.object({
     email: Joi.string().email().required().trim().lowercase().messages({
         'any.required': 'Email is requires',
@@ -204,4 +208,4 @@ export const loginValidation = Joi.object({
         'any.required': 'password is requires',
         'string.empty': 'Must enter your password',
     }),
-})
+});

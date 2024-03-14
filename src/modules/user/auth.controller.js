@@ -5,6 +5,8 @@ import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
 import { sendEmail } from "../../utils/email.js";
+import cloudinary from "../../utils/cloud.js";
+import { nanoid } from "nanoid";
 
 //-------------------------------
 const signToken = (user, expireWithin = process.env.JWT_EXPIRES_IN) => {
@@ -59,10 +61,20 @@ export const signup = catchAsync(async (req, res, next) => {
   if (userCheck) {
     return next(new AppError("Email Already Exists", 400));
   }
+  let userImage = {};
+  if (req.file) {
+    // create unique folder name
+    const cloudFolder = nanoid();
+    const { public_id, secure_url } = await cloudinary.uploader.upload(req.file.path, { folder: `${process.env.FOLDER_CLOUD_USERS}/users/${cloudFolder}` });
+    userImage = { id: public_id, url: secure_url };
+  }
 
-  const newUser = await User.create(req.body);
+  const newUser = await User.create({
+    ...req.body,
+    image: userImage || undefined
+  });
 
-  // make token expire within 15 minites
+  // make token expire within 15 minutes
   const token = newUser.createVerifyEmailToken(15);
   await newUser.save({ validateBeforeSave: false });
 

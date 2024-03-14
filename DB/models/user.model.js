@@ -106,6 +106,14 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Message",
     }],
+    image: {
+      id: {
+        type: String,
+      },
+      url: {
+        type: String,
+      },
+    }
   },
   {
     timestamps: true,

@@ -7,18 +7,19 @@ import { getAllUsers, getUser, updateUser, deleteUser, clearWishlist, addToWishl
 // prettier-ignore
 import { signup, login, logout, verifyAccount } from "./auth.controller.js";
 // prettier-ignore
-import { forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js"
+import { forgotPassword, resetPassword, updateMyPassword } from "./password.controller.js";
 // prettier-ignore
 import { accessRestrictedTo, protect, addUserIdToURL } from "../../middleware/authMiddlewares.js";
 
 import { isValid } from '../../middleware/validation.js';
 
-import { idValidation, addUserValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, forgotPasswordValidation, loginValidation } from './user.validation.js'
+import { idValidation, addUserValidation, resetPasswordValidation, updatePasswordValidation, updateUserValidation, forgotPasswordValidation, loginValidation } from './user.validation.js';
+import { fileUpload, filterObject } from "../../utils/multer.js";
 //----------------------------
 userRouter.use(cookieParser());
 //? routes
 userRouter.post("/login", isValid(loginValidation), login);
-userRouter.post("/signup", isValid(addUserValidation), signup);
+userRouter.post("/signup", fileUpload(filterObject.image).single('image'), isValid(addUserValidation), signup);
 
 userRouter.get("/verify/:token", verifyAccount);
 userRouter.post("/forgotPassword", isValid(forgotPasswordValidation), forgotPassword);
