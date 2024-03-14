@@ -182,7 +182,6 @@ export const getTopCarsByRent = catchAsync(async (req, res, next) => {
         },
         {
             $project: {
-                '_id': 0,
                 'car.__v': 0,
                 'car.brand.__v': 0,
                 'car.cloudFolder': 0,
@@ -194,6 +193,14 @@ export const getTopCarsByRent = catchAsync(async (req, res, next) => {
     sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
 });
 
-export const getAllRentals = getAll(Rental);
-export const getOneRental = getOne(Rental);
+
+const populateObj = [
+    {
+        path: "car",
+        select: "-__v -id",
+    },
+];
+
+export const getAllRentals = getAll(Rental, populateObj);
+export const getOneRental = getOne(Rental, populateObj);
 export const deleteOneRental = deleteOne(Rental);
