@@ -1,5 +1,6 @@
 import Car from "../../../DB/models/car.model.js";
 import Rental from "../../../DB/models/rental.model.js";
+import User from "../../../DB/models/user.model.js";
 import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
@@ -41,7 +42,7 @@ export const createRental = catchAsync(async (req, res, next) => {
     if (!carExist) {
         return next(new AppError("Car not found", 404));
     }
-    // check if the car is available
+    // check if the car status is available
     const carAvailable = await Car.findById(req.body.car);
     if (carAvailable.status !== "available") {
         return next(new AppError("Car not available right now", 404));
@@ -61,6 +62,7 @@ export const createRental = catchAsync(async (req, res, next) => {
 
     // update car status
     await Car.findByIdAndUpdate(req.body.car, { status: "rented" }, { new: true });
+    await User.findByIdAndUpdate(req.user._id, { $push: { rentedCars: carExist._id } }, { new: true });
 
     sendData(201, "success", "Rental created successfully", rental, res);
 });

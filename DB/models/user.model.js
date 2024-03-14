@@ -59,18 +59,14 @@ const userSchema = new mongoose.Schema(
       ],
       trim: true,
     },
-    rentedCars: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Car",
-      },
-    ],
-    ownedCars: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Car",
-      },
-    ],
+    rentedCars: [{
+      type: mongoose.Schema.ObjectId,
+      ref: "Car",
+    }],
+    ownedCars: [{
+      type: mongoose.Schema.ObjectId,
+      ref: "Car",
+    }],
     driverLicense: {
       type: String,
       required: [true, "Please enter driver license"],

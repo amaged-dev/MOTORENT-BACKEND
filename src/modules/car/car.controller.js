@@ -7,6 +7,7 @@ import { createOne, deleteOne, getAll, getOne, updateOne } from "../controllers.
 import cloudinary from './../../utils/cloud.js';
 
 import dotenv from "dotenv";
+import User from "../../../DB/models/user.model.js";
 dotenv.config();
 
 //----------------------------------------------
@@ -63,6 +64,7 @@ export const addCar = catchAsync(async (req, res, next) => {
     images,
     documents,
   });
+  await User.findByIdAndUpdate(req.user._id, { $addToSet: { ownedCars: newCar._id } }, { new: true });
   sendData(201, "success", "Car added successfully", newCar, res);
 });
 
