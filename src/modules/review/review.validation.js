@@ -24,16 +24,6 @@ export const addReviewValidation = Joi.object({
             'number.min': 'Rating must start from 1.0',
             'number.max': 'Rating must be below or equal  5.0'
         }),
-
-    user: Joi.string()
-        .custom(isValidObjectId, 'custom validation')
-        .required()
-        .messages({
-            'any.required': 'Review must belong to a user',
-            'string.base': 'User must be a string',
-            'custom.validation': 'Invalid user ObjectId'
-        }),
-
     car: Joi.string()
         .custom(isValidObjectId, 'custom validation')
         .required()

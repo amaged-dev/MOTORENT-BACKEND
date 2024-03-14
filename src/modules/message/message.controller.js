@@ -39,7 +39,6 @@ export const addReplay = catchAsync(async (req, res, next) => {
 });
 
 //----------------------------------------
-//LINK - This function will be edit to add cloudinary image upload
 export const sendMessage = catchAsync(async (req, res, next) => {
 
     req.body.user = req.user.id;
