@@ -157,12 +157,50 @@ export const getTopCars = catchAsync(async (req, res, next) => {
     ]);
     sendData(200, "success", "Top cars fetched successfully", topCars, res);
 });
-// top cars by rent descending
+// // top cars by rent descending
+// export const getTopCarsByRent = catchAsync(async (req, res, next) => {
+//     const topCars = await Rental.aggregate([
+//         {
+//             $group: {
+//                 _id: "$car",
+//                 count: { $sum: 1 }
+//             }
+//         },
+//         {
+//             $sort: { count: -1 }
+//         },
+//         {
+//             $lookup: {
+//                 from: "cars", // the name of the Car collection
+//                 localField: "_id",
+//                 foreignField: "_id",
+//                 as: "car"
+//             }
+//         },
+//         {
+//             $unwind: "$car"
+//         },
+//         {
+//             $project: {
+//                 'car.__v': 0,
+//                 'car.brand.__v': 0,
+//                 'car.cloudFolder': 0,
+//                 'car.createdAt': 0,
+//                 'car.updatedAt': 0,
+//             }
+//         },
+//     ]);
+//     sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
+// });
+
 export const getTopCarsByRent = catchAsync(async (req, res, next) => {
     const topCars = await Rental.aggregate([
         {
             $group: {
-                _id: "$car",
+                _id: {
+                    car: "$car",
+                    rental: "$_id"
+                },
                 count: { $sum: 1 }
             }
         },
@@ -171,8 +209,8 @@ export const getTopCarsByRent = catchAsync(async (req, res, next) => {
         },
         {
             $lookup: {
-                from: "cars", // the name of the Car collection
-                localField: "_id",
+                from: "cars",
+                localField: "_id.car",
                 foreignField: "_id",
                 as: "car"
             }
