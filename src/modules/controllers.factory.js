@@ -5,13 +5,13 @@ import AppError from "../utils/appError.js";
 import { sendData } from "../utils/sendData.js";
 //-----------------------------------------------
 //! 1- get All
-export function getAll(Model) {
+export function getAll(Model, PopulateObj) {
   return catchAsync(async (req, res, next) => {
     let filterReviewId = {};
 
     if (req.params.carId) filterCarId = { car: req.params.carId };
 
-    const queryFeatured = new APIFeatures(Model.find(filterReviewId), req.query)
+    const queryFeatured = new APIFeatures(Model.find(filterReviewId).populate(PopulateObj), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -33,7 +33,7 @@ export function getAll(Model) {
 // ! 2- get one by id
 export function getOne(Model, PopulateObj) {
   return catchAsync(async (req, res, next) => {
-    let filter = PopulateObj || {};
+    let filter = PopulateObj;
     let query = Model.findById(req.params.id);
     if (filter) query = query.populate(filter);
     const document = await query;

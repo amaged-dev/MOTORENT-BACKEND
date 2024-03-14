@@ -315,6 +315,6 @@ const populateObj = [
   }
 ];
 
-export const getAllCars = getAll(Car);
+export const getAllCars = getAll(Car, populateObj);
 
 export const getCar = getOne(Car, populateObj);
