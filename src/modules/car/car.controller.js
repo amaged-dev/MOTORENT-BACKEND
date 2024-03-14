@@ -10,6 +10,20 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //----------------------------------------------
+// approve that rental has received the car
+
+export const updateToAvailable = catchAsync(async (req, res, next) => {
+  // check car existence
+  const isExist = await Car.findById(req.params.id);
+  if (!isExist) return next(new AppError(`car is not exists`, 404));
+  if (isExist.active !== true) return next(new AppError(`car is not active yet, please contact with us!`, 404));
+  // update car approval status
+  const car = await Car.findByIdAndUpdate(req.params.id, { approved: true, active: true, status: "available" }, { new: true });
+
+  sendData(200, "success", "Car Activated Successfully", car, res);
+});
+
+//----------------------------------------------
 export const addCar = catchAsync(async (req, res, next) => {
   // check car existence
   const isExist = await Car.findOne({ plateNumber: req.body.plateNumber });
@@ -75,7 +89,7 @@ export const declineCar = catchAsync(async (req, res, next) => {
   if (!car) {
     return next(new AppError(`car id is not exists`, 404));
   }
-  sendData(200, "success", "Car Declined Successfully", null, res);
+  sendData(200, "success", "Car Declined Successfully", car, res);
 });
 
 //----------------------------------------------
@@ -106,7 +120,7 @@ export const activateCar = catchAsync(async (req, res, next) => {
 
 //----------------------------------------------
 export const getCarsByCategory = catchAsync(async (req, res, next) => {
-  const cars = await Car.find({ category: req.body.category });
+  const cars = await Car.find({ category: req.body.category.toUpperCase() });
   if (!cars) {
     return next(new AppError(`This Category Not Exists`, 404));
   }
@@ -296,13 +310,9 @@ export const deleteCar = catchAsync(async (req, res, next) => {
 //----------------------------------------------
 const populateObj = [
   {
-    path: "rentedCars",
-    select: "-__v -id",
-  },
-  {
-    path: "ownedCars",
-    select: "-__v -id",
-  },
+    path: "brand",
+    select: "-__v -_id",
+  }
 ];
 
 export const getAllCars = getAll(Car);

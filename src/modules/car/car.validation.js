@@ -251,3 +251,30 @@ export const updateCarValidation = Joi.object({
             'number.max': 'Rating cannot exceed 5'
         })
 });
+
+export const getCarsByManufacturingYearValidation = Joi.object({
+    from: Joi.number()
+        .required()
+        .messages({
+            'any.required': 'manufacturingYear from date is required',
+            'date.base': 'manufacturingYear from date must be a valid date'
+        }),
+
+    to: Joi.number()
+        .required()
+        .messages({
+            'any.required': 'manufacturingYear to date is required',
+            'date.base': 'manufacturingYear to date must be a valid date'
+        }),
+});
+
+export const getCarsByCategoryValidation = Joi.object({
+    category: Joi.string()
+        .valid("SUV", "SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "WAGON")
+        .required()
+        .messages({
+            'any.required': 'Car category is required',
+            'string.base': 'Category must be a string',
+            'any.only': 'Invalid car category'
+        }),
+});
