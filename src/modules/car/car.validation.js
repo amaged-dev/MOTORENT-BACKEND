@@ -7,15 +7,6 @@ export const idValidation = Joi.object({
 
 
 export const addCarValidation = Joi.object({
-    ownerId: Joi.string()
-        .required()
-        .custom(isValidObjectId, 'custom validation')
-        .messages({
-            'any.required': 'Car owner is required',
-            'string.base': 'Owner ID must be a string',
-            'custom.validation': 'Invalid owner ObjectId'
-        }),
-
     manufacturingYear: Joi.number()
         .required()
         .messages({
@@ -75,22 +66,6 @@ export const addCarValidation = Joi.object({
             'any.required': 'Car capacity is required',
             'number.base': 'Capacity must be a number'
         }),
-
-    active: Joi.boolean()
-        .default(false),
-
-    status: Joi.string()
-        .valid("available", "rented", "pending", "rejected")
-        .required()
-        .default("pending")
-        .messages({
-            'any.required': 'Car status is required',
-            'string.base': 'Status must be a string',
-            'any.only': 'Invalid car status'
-        }),
-
-    approved: Joi.boolean()
-        .default(false),
 
     priceForDay: Joi.number()
         .required()
@@ -155,16 +130,6 @@ export const addCarValidation = Joi.object({
             id: Joi.string().required(),
             url: Joi.string().required()
         })),
-
-    rating: Joi.number()
-        .default(1)
-        .min(1)
-        .max(5)
-        .messages({
-            'number.base': 'Rating must be a number',
-            'number.min': 'Rating must be at least 1',
-            'number.max': 'Rating cannot exceed 5'
-        })
 });
 
 export const updateCarValidation = Joi.object({
