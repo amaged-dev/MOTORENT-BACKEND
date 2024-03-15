@@ -60,6 +60,7 @@ export const addCar = catchAsync(async (req, res, next) => {
 
   const newCar = await Car.create({
     ...req.body,
+    ownerId: req.user._id,
     cloudFolder,
     images,
     documents,
