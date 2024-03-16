@@ -43,7 +43,7 @@ export const sendMessage = catchAsync(async (req, res, next) => {
 
     req.body.user = req.user.id;
 
-    let attachmentsObj = {}
+    let attachmentsObj = {};
     if (req.file) {
         // create unique folder name
         const cloudFolder = nanoid();
@@ -60,4 +60,11 @@ export const sendMessage = catchAsync(async (req, res, next) => {
 });
 
 export const deleteMessage = deleteOne(Message);
-export const getAllMessages = getAll(Message);
+const populateObj = [
+    {
+        path: "user",
+        select: "-__v ",
+    }
+];
+
+export const getAllMessages = getAll(Message, populateObj);
