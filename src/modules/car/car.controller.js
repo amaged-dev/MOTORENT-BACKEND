@@ -3,7 +3,7 @@ import Car from "../../../DB/models/car.model.js";
 import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
 import { sendData } from "../../utils/sendData.js";
-import { createOne, deleteOne, getAll, getOne, updateOne } from "../controllers.factory.js";
+import { getAll, getOne } from "../controllers.factory.js";
 import cloudinary from './../../utils/cloud.js';
 
 import dotenv from "dotenv";

@@ -231,6 +231,87 @@ export const getTopCarsByRent = catchAsync(async (req, res, next) => {
     sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
 });
 
+export const platformRevenue = catchAsync(async (req, res, next) => {
+    const revenue = await Rental.aggregate([
+        {
+            $group: {
+                _id: null,
+                total: { $sum: "$finalPrice" }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                revenue: { $multiply: ["$total", 0.20] }
+            }
+        }
+    ]);
+
+    sendData(200, "success", "Platform Revenue fetched successfully", revenue, res);
+});
+
+// ====
+// Function to calculate daily revenue considering platform commission
+export const calculateMonthlyRevenue = catchAsync(async (req, res, next) => {
+    const year = req.query?.year?.replace(/\D/g, ''); // Extract only digits from the parameter
+
+    if (!year || isNaN(year)) {
+        return res.status(400).json({ status: "error", message: "Invalid year parameter" });
+    }
+
+    try {
+        // Construct the start and end dates of the given year in the local time zone
+        const startOfYear = new Date(Number(year), 0, 1); // January 1st of the given year
+        const endOfYear = new Date(Number(year), 11, 31, 23, 59, 59); // December 31st of the given year
+
+        // Aggregate to calculate total revenue for each month of the year
+        const monthlyRevenue = await Rental.aggregate([
+            {
+                $match: {
+                    from: { $gte: startOfYear, $lte: endOfYear } // Filter rentals within the given year
+                }
+            },
+            {
+                $project: {
+                    month: { $month: { date: "$from", timezone: "UTC" } }, // Extract month from 'from' date in UTC
+                    platformCommission: { $multiply: ["$finalPrice", 0.2] }, // Calculate platform commission (20%)
+                    netRevenue: { $subtract: ["$finalPrice", { $multiply: ["$finalPrice", 0.2] }] } // Calculate net revenue
+                }
+            },
+            {
+                $group: {
+                    _id: { month: "$month" }, // Group by month
+                    totalRevenue: { $sum: "$netRevenue" } // Sum of net revenue for each month
+                }
+            }
+        ]);
+
+        // Convert the resulting array to an object with month number as keys
+        const monthlyRevenueObj = {};
+        monthlyRevenue.forEach(item => {
+            monthlyRevenueObj[item._id.month] = item.totalRevenue;
+        });
+
+        // Prepare response data with month names
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const result = months.map((monthName, index) => ({
+            _id: { month: index + 1, monthName },
+            totalRevenue: monthlyRevenueObj[index + 1] || 0
+        }));
+
+        sendData(200, "success", "Monthly revenue fetched successfully", result, res);
+    } catch (error) {
+        console.error("Error occurred while calculating monthly revenue:", error);
+        sendData(500, "error", "An error occurred while calculating monthly revenue", null, res);
+    }
+});
+
+
+
+// ====
+
+
+
 
 const populateObj = [
     {
