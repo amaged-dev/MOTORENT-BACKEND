@@ -323,6 +323,38 @@ export const deleteCar = catchAsync(async (req, res, next) => {
   sendData(200, "success", "Car deleted successfully", null, res);
 });
 
+export const deleteAllCars = catchAsync(async (req, res, next) => {
+  const cars = await Car.find();
+  if (!cars) return next(new AppError(`No cars exists`, 404));
+
+  for (const car of cars) {
+    const imagesArray = car.images;
+    const ids = imagesArray.map((imageObject) => imageObject.id);
+
+    const idsArray = [];
+
+    for (const key in car.documents) {
+      if (car.documents.hasOwnProperty(key)) {
+        const document = car.documents[key];
+        idsArray.push(document.id);
+      }
+    }
+
+    // delete the old documents from cloudinary
+    const result2 = await cloudinary.api.delete_resources(idsArray);
+    // delete documents folder
+    await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/documents/${car.cloudFolder}`);
+
+    // delete the old images from cloudinary
+    const result = await cloudinary.api.delete_resources(ids);
+    // delete image folder
+    await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/images/${car.cloudFolder}`);
+  }
+
+  await Car.deleteMany();
+  sendData(200, "success", "All cars deleted successfully", null, res);
+})
+
 //----------------------------------------------
 const populateObj = [
   {
