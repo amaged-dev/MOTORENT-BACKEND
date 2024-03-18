@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import Car from "../../../DB/models/car.model.js";
 import Rental from "../../../DB/models/rental.model.js";
 import User from "../../../DB/models/user.model.js";
@@ -58,13 +59,59 @@ export const createRental = catchAsync(async (req, res, next) => {
     // Calculate the price
     const price = differenceInDays * carExist.priceForDay;
     req.body.finalPrice = price;
+
     const rental = await Rental.create(req.body);
 
-    // update car status
-    await Car.findByIdAndUpdate(req.body.car, { status: "rented" }, { new: true });
-    await User.findByIdAndUpdate(req.user._id, { $push: { rentedCars: carExist._id } }, { new: true });
 
-    sendData(201, "success", "Rental created successfully", rental, res);
+    // create the payment with stripe
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        mode: 'payment',
+        success_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/success/${rental._id}`,
+        cancel_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/failure/${rental._id}`,
+        customer_email: req.user.email,
+        line_items: [
+            {
+                price_data: {
+                    currency: 'egp',
+                    product_data: {
+                        name: carExist.model,
+                        images: carExist?.images?.map(image => image.url)
+                    },
+                    unit_amount: Math.round(price * 100),
+                },
+                quantity: 1,
+            },
+        ],
+    });
+
+    await Rental.findByIdAndUpdate(rental._id, { sessionId: session.id }, { new: true });
+
+    sendData(201, "success", "Rental created successfully", session.url, res);
+});
+
+export const paymentSuccess = catchAsync(async (req, res, next) => {
+
+    const rental = await Rental.findById(req.params.id);
+
+    if (!rental.sessionId) {
+        return next(new AppError("please pay first!", 404));
+    }
+
+    // update car status
+    await Car.findByIdAndUpdate(rental.car, { status: "rented" }, { new: true });
+    await User.findByIdAndUpdate(rental.renterId, { $push: { rentedCars: rental.car } }, { new: true });
+
+    rental.status = "paid";
+    await rental.save();
+
+    sendData(200, "success", "Payment success", rental, res);
+});
+
+export const paymentFail = catchAsync(async (req, res, next) => {
+    await Rental.findByIdAndDelete(req.params.id);
+    sendData(200, "success", "Payment failed, please try again", undefined, res);
 });
 
 export const getMyRentals = catchAsync(async (req, res, next) => {
@@ -231,7 +278,7 @@ export const getTopCarsByRent = catchAsync(async (req, res, next) => {
     sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
 });
 
-export const platformRevenue = catchAsync(async (req, res, next) => {
+export const totalPlatformRevenue = catchAsync(async (req, res, next) => {
     const revenue = await Rental.aggregate([
         {
             $group: {
@@ -253,18 +300,17 @@ export const platformRevenue = catchAsync(async (req, res, next) => {
 // ====
 // Function to calculate daily revenue considering platform commission
 export const calculateMonthlyRevenue = catchAsync(async (req, res, next) => {
-    const year = req.query?.year?.replace(/\D/g, ''); // Extract only digits from the parameter
+    const year = req.params?.year;
 
     if (!year || isNaN(year)) {
         return res.status(400).json({ status: "error", message: "Invalid year parameter" });
     }
 
     try {
-        // Construct the start and end dates of the given year in the local time zone
-        const startOfYear = new Date(Number(year), 0, 1); // January 1st of the given year
-        const endOfYear = new Date(Number(year), 11, 31, 23, 59, 59); // December 31st of the given year
+        const startOfYear = new Date(Number(year), 0, 1);
+        const endOfYear = new Date(Number(year), 11, 31, 23, 59, 59);
 
-        // Aggregate to calculate total revenue for each month of the year
+        // Aggregate to calculate total revenue and platform commission for each month of the year
         const monthlyRevenue = await Rental.aggregate([
             {
                 $match: {
@@ -274,14 +320,14 @@ export const calculateMonthlyRevenue = catchAsync(async (req, res, next) => {
             {
                 $project: {
                     month: { $month: { date: "$from", timezone: "UTC" } }, // Extract month from 'from' date in UTC
-                    platformCommission: { $multiply: ["$finalPrice", 0.2] }, // Calculate platform commission (20%)
-                    netRevenue: { $subtract: ["$finalPrice", { $multiply: ["$finalPrice", 0.2] }] } // Calculate net revenue
+                    finalPrice: 1 // Include final price
                 }
             },
             {
                 $group: {
                     _id: { month: "$month" }, // Group by month
-                    totalRevenue: { $sum: "$netRevenue" } // Sum of net revenue for each month
+                    total: { $sum: "$finalPrice" }, // Sum of final prices for each month
+                    revenue: { $sum: { $multiply: ["$finalPrice", 0.20] } } // Sum of platform commission (20%) for each month
                 }
             }
         ]);
@@ -289,20 +335,25 @@ export const calculateMonthlyRevenue = catchAsync(async (req, res, next) => {
         // Convert the resulting array to an object with month number as keys
         const monthlyRevenueObj = {};
         monthlyRevenue.forEach(item => {
-            monthlyRevenueObj[item._id.month] = item.totalRevenue;
+            monthlyRevenueObj[item._id.month] = {
+                total: item.total,
+                revenue: item.revenue
+            };
         });
 
         // Prepare response data with month names
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         const result = months.map((monthName, index) => ({
-            _id: { month: index + 1, monthName },
-            totalRevenue: monthlyRevenueObj[index + 1] || 0
+            month: index + 1,
+            monthName: monthName,
+            total: monthlyRevenueObj[index + 1]?.total || 0,
+            revenue: monthlyRevenueObj[index + 1]?.revenue || 0
         }));
 
-        sendData(200, "success", "Monthly revenue fetched successfully", result, res);
+        res.status(200).json({ status: "success", message: "Monthly revenue fetched successfully", data: result });
     } catch (error) {
         console.error("Error occurred while calculating monthly revenue:", error);
-        sendData(500, "error", "An error occurred while calculating monthly revenue", null, res);
+        res.status(500).json({ status: "error", message: "An error occurred while calculating monthly revenue" });
     }
 });
 

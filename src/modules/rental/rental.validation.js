@@ -29,3 +29,15 @@ export const rentalValidation = Joi.object({
             'date.base': 'Rental to date must be a valid date'
         }),
 });
+
+export const yearlyRevenueValidation = Joi.object({
+    year: Joi.number()
+        .required()
+        .min(2023)
+        .messages({
+            'any.required': 'Year is required',
+            'number.base': 'Year must be a number',
+            'number.min': 'Year must be greater than 2020',
+            'number.max': 'Year must be less than 2030'
+        })
+});
