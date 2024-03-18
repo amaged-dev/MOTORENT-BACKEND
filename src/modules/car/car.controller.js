@@ -301,7 +301,7 @@ export const deleteCar = catchAsync(async (req, res, next) => {
   // delete the old images from cloudinary
   const result = await cloudinary.api.delete_resources(ids);
   // delete image folder
-  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/cars/${isExist.cloudFolder}`);
+  await cloudinary.api.delete_folder(`${process.env.FOLDER_CLOUD_CARS}/images/${isExist.cloudFolder}`);
 
   const car = await Car.findByIdAndDelete(req.params.id);
   if (!car) {
