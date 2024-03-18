@@ -30,9 +30,9 @@ export const addCarValidation = Joi.object({
         }),
 
     category: Joi.string()
-        .valid("SUV", "Sedan", "Hatchback", "Coupe", "Convertible", "Wagon")
+        .valid("SUV", "SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "WAGON")
+        .default("SEDAN")
         .required()
-        .default("Sedan")
         .messages({
             'any.required': 'Car category is required',
             'string.base': 'Category must be a string',
@@ -152,8 +152,8 @@ export const updateCarValidation = Joi.object({
         }),
 
     category: Joi.string()
-        .valid("SUV", "Sedan", "Hatchback", "Coupe", "Convertible", "Wagon")
-        .default("Sedan")
+        .valid("SUV", "SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "WAGON")
+        .default("SEDAN")
         .messages({
             'string.base': 'Category must be a string',
             'any.only': 'Invalid car category'
@@ -163,6 +163,16 @@ export const updateCarValidation = Joi.object({
         .messages({
             'number.base': 'Tank capacity must be a number'
         }),
+    transmission: Joi.string().valid("auto", "manual").messages({
+        'any.required': 'Car transmission is required',
+        'string.base': 'transmission name must be a string',
+        'any.only': 'Invalid car transmission'
+    }),
+
+    capacity: Joi.number().messages({
+        'any.required': 'Car capacity is required',
+        'number.base': 'Capacity must be a number'
+    }),
 
     average: Joi.number()
         .messages({
