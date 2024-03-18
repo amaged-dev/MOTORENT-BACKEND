@@ -113,7 +113,8 @@ const userSchema = new mongoose.Schema(
       url: {
         type: String,
       },
-    }
+    },
+    cloudFolder: String,
   },
   {
     timestamps: true,
