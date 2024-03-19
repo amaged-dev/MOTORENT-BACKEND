@@ -253,3 +253,13 @@ export const getCarsByCategoryValidation = Joi.object({
             'any.only': 'Invalid car category'
         }),
 });
+export const getCarsByCategoriesValidation = Joi.object({
+    categories: Joi.array().items(Joi.string()
+        .valid("SUV", "SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "WAGON"))
+        .required()
+        .messages({
+            'any.required': 'Car category is required',
+            'string.base': 'Category must be a string',
+            'any.only': 'Invalid car category'
+        }),
+});

@@ -3,7 +3,7 @@ import Car from "../../../DB/models/car.model.js";
 import { accessRestrictedTo, isCreatorUserOrAdmin, protect } from "../../middleware/authMiddlewares.js";
 import * as carController from "./car.controller.js";
 import { isValid } from "../../middleware/validation.js";
-import { addCarValidation, getCarsByCategoryValidation, getCarsByManufacturingYearValidation, idValidation, updateCarValidation } from "./car.validation.js";
+import { addCarValidation, getCarsByCategoryValidation, getCarsByManufacturingYearValidation, idValidation, updateCarValidation, getCarsByCategoriesValidation } from "./car.validation.js";
 import { fileUpload, filterObject } from "../../utils/multer.js";
 import { collectDocumentKeysInObject } from "../../middleware/collectKeysInObject.js";
 
@@ -11,8 +11,10 @@ import { collectDocumentKeysInObject } from "../../middleware/collectKeysInObjec
 const carRouter = express.Router();
 
 carRouter.get("/", carController.getAllCars);
+carRouter.get("/getAllAvailableCars", carController.getAllAvailableCars);
 carRouter.get("/getCarsByManufacturingYear", isValid(getCarsByManufacturingYearValidation), carController.getCarsByManufacturingYear);
 carRouter.get("/getCarsByCategory", isValid(getCarsByCategoryValidation), carController.getCarsByCategory);
+carRouter.get("/getCarsByCategories", isValid(getCarsByCategoriesValidation), carController.getCarsByCategories);
 carRouter.get("/getAllCategories", carController.getAllCategories);
 carRouter.get("/getTop5Cars", carController.getTop5Cars);
 carRouter.get("/getTop5CarsByCategory", carController.getTop5CarsByCategory);

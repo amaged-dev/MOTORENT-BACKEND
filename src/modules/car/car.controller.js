@@ -123,10 +123,23 @@ export const activateCar = catchAsync(async (req, res, next) => {
 
 //----------------------------------------------
 export const getCarsByCategory = catchAsync(async (req, res, next) => {
+
   const cars = await Car.find({ category: req.body.category.toUpperCase() });
   if (!cars) {
     return next(new AppError(`This Category Not Exists`, 404));
   }
+  sendData(200, "success", "Requested data successfully fetched", cars, res);
+});
+//----------------------------------------------
+export const getCarsByCategories = catchAsync(async (req, res, next) => {
+  const categories = req.body.categories.map(category => category.toUpperCase());
+
+  const cars = await Car.find({ category: { $in: categories } });
+
+  if (!cars || cars.length === 0) {
+    return next(new AppError(`No Cars Found with the Specified Categories`, 404));
+  }
+
   sendData(200, "success", "Requested data successfully fetched", cars, res);
 });
 
@@ -355,6 +368,8 @@ export const deleteAllCars = catchAsync(async (req, res, next) => {
   sendData(200, "success", "All cars deleted successfully", null, res);
 })
 
+
+
 //----------------------------------------------
 const populateObj = [
   {
@@ -366,3 +381,15 @@ const populateObj = [
 export const getAllCars = getAll(Car, populateObj);
 
 export const getCar = getOne(Car, populateObj);
+
+// get all getAllAvailableCars
+export const getAllAvailableCars = catchAsync(async (req, res, next) => {
+  const availableCars = await Car.find({ status: 'available' }).populate(populateObj);
+  sendData(
+    200,
+    "success",
+    "Requested Cars successfully fetched",
+    availableCars,
+    res
+  );
+});
