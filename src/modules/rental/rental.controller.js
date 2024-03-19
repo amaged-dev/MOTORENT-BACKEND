@@ -95,10 +95,13 @@ export const createRental = catchAsync(async (req, res, next) => {
         ],
     });
 
+    const resData = { id: rental._id, url: session.url }
+
     await Rental.findByIdAndUpdate(rental._id, { sessionId: session.id }, { new: true });
 
-    sendData(201, "success", "Rental created successfully", session.url, res);
+    sendData(201, "success", "Rental created successfully", resData, res);
 });
+
 
 export const paymentSuccess = catchAsync(async (req, res, next) => {
 
