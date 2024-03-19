@@ -109,7 +109,7 @@ export const updateUserValidation = Joi.object({
         'string.email': 'Email must be a valid email address',
         'string.trim': 'Email must not contain leading or trailing spaces'
     }),
-    role: Joi.string().valid('user', 'admin').default('user'),
+    // role: Joi.string().valid('user', 'admin').default('user'),
     address: Joi.string().messages({
         'string.empty': 'Must enter your address',
     }),
@@ -138,6 +138,10 @@ export const updateUserValidation = Joi.object({
         }),
     driverLicense: Joi.string().messages({
         'string.empty': 'Please enter your driver license'
+    }),
+    image: Joi.object({
+        id: Joi.string(),
+        url: Joi.string()
     })
 });
 

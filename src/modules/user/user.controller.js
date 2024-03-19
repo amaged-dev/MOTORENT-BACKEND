@@ -69,21 +69,23 @@ const populateObj = [
 
 
 export const updateUser = catchAsync(async (req, res, next) => {
-  const isExist = await User.findById(req.user._id);
+  const userId = req.user.id;
+  const isExist = await User.findById(userId);
   if (!isExist) {
     return next(new AppError(`user id is not exists`, 404));
   }
 
   // delete user old image from cloudinary
-  if (req.file && isExist.image.id) {
+  if (req.file && isExist?.image?.id) {
     await cloudinary.uploader.destroy(isExist.image.id);
   }
   let cloudFolder;
 
   let userImage = {};
-  if (req.file && !isExist.image.id) {
+  if (req.file && !isExist?.image?.id) {
     cloudFolder = nanoid();
     req.body.cloudFolder = cloudFolder;
+
   }
 
   if (req.file) {
@@ -91,10 +93,12 @@ export const updateUser = catchAsync(async (req, res, next) => {
     const { public_id, secure_url } = await cloudinary.uploader.upload(req.file.path, { folder: `${process.env.FOLDER_CLOUD_USERS}/users/${cloudFolder}` });
     userImage = { id: public_id, url: secure_url };
     req.body.image = userImage;
+    console.log(req.body.image);
+
   }
 
   // update the image only if there is a new image
-  const user = await User.findByIdAndUpdate(req.user_.id, { ...req.body }, { new: true });
+  const user = await User.findByIdAndUpdate(userId, { ...req.body }, { new: true });
 
   sendData(200, "success", "User updated successfully", user, res);
 });
