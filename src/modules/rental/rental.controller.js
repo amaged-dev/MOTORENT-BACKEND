@@ -1,12 +1,21 @@
+import path from 'path';
 import Stripe from "stripe";
+import { fileURLToPath } from "url";
 import Car from "../../../DB/models/car.model.js";
 import Rental from "../../../DB/models/rental.model.js";
 import User from "../../../DB/models/user.model.js";
 import AppError from "../../utils/appError.js";
 import catchAsync from "../../utils/catchAsync.js";
+import { createInvoice } from "../../utils/pdfTemplate.js";
 import { sendData } from "../../utils/sendData.js";
 import { deleteOne, getAll, getOne } from "../controllers.factory.js";
+import { nanoid } from 'nanoid';
+import cloudinary from './../../utils/cloud.js';
+import fs from 'fs';
+import sendEmail from '../../utils/email.js';
 
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const getRecentRentals = catchAsync(async (req, res, next) => {
     const recentTransactions = await Rental.find().sort({ createdAt: -1 }).limit(5);
     sendData(200, "success", "Recent Transactions fetched successfully", recentTransactions, res);
@@ -93,17 +102,69 @@ export const createRental = catchAsync(async (req, res, next) => {
 
 export const paymentSuccess = catchAsync(async (req, res, next) => {
 
-    const rental = await Rental.findById(req.params.id);
+    const rental = await Rental.findById(req.params.id).populate("car");
 
     if (!rental.sessionId) {
-        return next(new AppError("please pay first!", 404));
+        return next(new AppError("please pay first!", 401));
     }
+
+    // if (rental.invoice.id) {
+    //     return next(new AppError("payment invoice already issued!", 401));
+    // }
+
+    // rental days
+    const from = new Date(rental.from);
+    const to = new Date(rental.to);
+    const differenceInTime = to.getTime() - from.getTime();
+    const rentalDaysCount = differenceInTime / (1000 * 3600 * 24);
+
+    // send invoice to the user email
+    const invoice = {
+        name: req.user.firstName + " " + req.user.lastName,
+        address: req.user.address,
+        model: rental.car.model,
+        rentalDays: rentalDaysCount,
+        dailyRate: rental.car.priceForDay,
+        paid: rental.finalPrice,
+        invoice_nr: rental._id
+    };
+
+    const pdfPath = path.join(__dirname, `./../../../upload/${rental._id}.pdf`);
+
+    createInvoice(invoice, pdfPath);
+
+    // create unique folder name
+    const cloudFolder = nanoid();
+
+    // upload cloudinary
+    const { secure_url, public_id } = await cloudinary.uploader.upload(pdfPath,
+        { folder: `${process.env.FOLDER_CLOUD_INVOICES}/rental/${cloudFolder}` });
+
+    // delete the file from the server
+    fs.unlink(pdfPath, (err) => {
+        if (err) {
+            return next(new AppError("Error occurred while deleting the pdf file", 500));
+        }
+    });
+
+    // send the invoice to the user email
+    sendEmail({
+        email: req.user.email,
+        subject: "Rental Invoice",
+        message: "Your rental invoice is attached to this email",
+        attachments: [{
+            path: secure_url,
+            contentType: "application/pdf"
+        }]
+    });
 
     // update car status
     await Car.findByIdAndUpdate(rental.car, { status: "rented" }, { new: true });
     await User.findByIdAndUpdate(rental.renterId, { $push: { rentedCars: rental.car } }, { new: true });
 
     rental.status = "paid";
+    rental.invoice.id = public_id;
+    rental.invoice.url = secure_url;
     await rental.save();
 
     sendData(200, "success", "Payment success", rental, res);
@@ -127,7 +188,7 @@ export const getTopCategories = catchAsync(async (req, res, next) => {
     const topCategories = await Rental.aggregate([
         {
             $lookup: {
-                from: "cars", // the name of the Car collection
+                from: "cars",
                 localField: "car",
                 foreignField: "_id",
                 as: "car"
@@ -138,7 +199,7 @@ export const getTopCategories = catchAsync(async (req, res, next) => {
         },
         {
             $group: {
-                _id: "$car.category", // group by category
+                _id: "$car.category",
                 count: { $sum: 1 }
             }
         },
@@ -172,7 +233,7 @@ export const getTopCars = catchAsync(async (req, res, next) => {
         },
         {
             $lookup: {
-                from: "cars", // the name of the Car collection
+                from: "cars",
                 localField: "_id",
                 foreignField: "_id",
                 as: "car"
@@ -183,7 +244,7 @@ export const getTopCars = catchAsync(async (req, res, next) => {
         },
         {
             $lookup: {
-                from: "brands", // the name of the Brand collection
+                from: "brands",
                 localField: "car.brand",
                 foreignField: "_id",
                 as: "car.brand"
@@ -204,41 +265,6 @@ export const getTopCars = catchAsync(async (req, res, next) => {
     ]);
     sendData(200, "success", "Top cars fetched successfully", topCars, res);
 });
-// // top cars by rent descending
-// export const getTopCarsByRent = catchAsync(async (req, res, next) => {
-//     const topCars = await Rental.aggregate([
-//         {
-//             $group: {
-//                 _id: "$car",
-//                 count: { $sum: 1 }
-//             }
-//         },
-//         {
-//             $sort: { count: -1 }
-//         },
-//         {
-//             $lookup: {
-//                 from: "cars", // the name of the Car collection
-//                 localField: "_id",
-//                 foreignField: "_id",
-//                 as: "car"
-//             }
-//         },
-//         {
-//             $unwind: "$car"
-//         },
-//         {
-//             $project: {
-//                 'car.__v': 0,
-//                 'car.brand.__v': 0,
-//                 'car.cloudFolder': 0,
-//                 'car.createdAt': 0,
-//                 'car.updatedAt': 0,
-//             }
-//         },
-//     ]);
-//     sendData(200, "success", "Top cars by rent fetched successfully", topCars, res);
-// });
 
 export const getTopCarsByRent = catchAsync(async (req, res, next) => {
     const topCars = await Rental.aggregate([

@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { emailTemplate } from "./emailTemplate.js";
 
-export const sendEmail = async ({ email, subject, url, message, html }) => {
+export const sendEmail = async ({ email, subject, url, message, html, attachments }) => {
   // 1) Create a transporter
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -16,11 +16,12 @@ export const sendEmail = async ({ email, subject, url, message, html }) => {
 
   // 2) Define the email options
   const mailOptions = {
-    from: `ITI-Final Project < ${process.env.EMAIL_USERNAME} >`,
+    from: `Motorent Inc. Project < ${process.env.EMAIL_USERNAME} >`,
     to: email,
     subject,
     // html,
-    html: emailTemplate(url, message),
+    html: html ? emailTemplate(url, message) : null,
+    attachments
   };
 
   // 3) send the email

@@ -30,6 +30,10 @@ const rentalSchema = new mongoose.Schema({
     },
     sessionId: {
         type: String,
+    },
+    invoice: {
+        id: { type: String },
+        url: { type: String }
     }
 }, { timestamps: true }, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 const Rental = mongoose.model("Rental", rentalSchema);
