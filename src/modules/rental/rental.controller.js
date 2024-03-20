@@ -134,7 +134,8 @@ export const paymentSuccess = catchAsync(async (req, res, next) => {
         invoice_nr: rental._id
     };
 
-    const pdfPath = path.join(__dirname, `./../../../upload/${rental._id}.pdf`);
+    const pdfPath = path.join(`./upload/${rental._id}.pdf`);
+    // const pdfPath = path.join(__dirname, `./../../../upload/${rental._id}.pdf`);
 
     createInvoice(invoice, pdfPath);
 
