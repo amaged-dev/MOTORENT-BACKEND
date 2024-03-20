@@ -21,7 +21,7 @@ messagesRouter.route("/")
 messagesRouter.use(accessRestrictedTo('admin'));
 messagesRouter.get("/all-messages", messagesController.getAllMessages);
 messagesRouter.get("/user-messages/:userId", messagesController.getUserMessages);
-messagesRouter.get("/messages-status", messagesController.getMessagesByStatus);
+messagesRouter.post("/messages-status", messagesController.getMessagesByStatus);
 
 messagesRouter.route("/:id")
     .get(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.getMessage)
