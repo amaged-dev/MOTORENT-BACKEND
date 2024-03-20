@@ -77,8 +77,10 @@ export const createRental = catchAsync(async (req, res, next) => {
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         mode: 'payment',
-        success_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/success/${rental._id}`,
-        cancel_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/failure/${rental._id}`,
+        success_url: `http://localhost:5173/rentalInfo/payres/${rental._id}`,
+        cancel_url: `http://localhost:5173/rentalInfo/payres/${rental._id}`,
+        // success_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/success/${rental._id}`,
+        // cancel_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/failure/${rental._id}`,
         customer_email: req.user.email,
         line_items: [
             {
