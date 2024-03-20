@@ -78,7 +78,7 @@ export const createRental = catchAsync(async (req, res, next) => {
         payment_method_types: ['card'],
         mode: 'payment',
         success_url: `http://localhost:5173/rentalInfo/payres/${rental._id}`,
-        cancel_url: `http://localhost:5173/rentalInfo/payres/${rental._id}`,
+        cancel_url: `http://localhost:5173/rentalInfo/payFail/${rental._id}`,
         // success_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/success/${rental._id}`,
         // cancel_url: `${process.env.BASE_URL}${process.env.PORT}/api/v1/rentals/failure/${rental._id}`,
         customer_email: req.user.email,
@@ -178,7 +178,7 @@ export const paymentSuccess = catchAsync(async (req, res, next) => {
 
 export const paymentFail = catchAsync(async (req, res, next) => {
     await Rental.findByIdAndDelete(req.params.id);
-    sendData(200, "success", "Payment failed, please try again", undefined, res);
+    sendData(200, "failed", "Payment failed, please try again", undefined, res);
 });
 
 export const getMyRentals = catchAsync(async (req, res, next) => {
