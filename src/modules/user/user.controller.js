@@ -13,14 +13,13 @@ import {
 
 export const addToWishlist = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.user.id,
-    { $addToSet: { wishlist: req.body.carId } },
+    { $addToSet: { wishlist: req.params.carId } },
     { new: true }
   );
-
   if (!user) {
     return next(new AppError(`user id is not exists`, 404));
   }
-  sendData(200, "success", "Car added to wishlist successfully", null, res);
+  sendData(200, "success", "Car added to wishlist successfully", user, res);
 });
 
 export const clearWishlist = catchAsync(async (req, res, next) => {
@@ -32,19 +31,18 @@ export const clearWishlist = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError(`user id is not exists`, 404));
   }
-  sendData(200, "success", "Wishlist cleared successfully", null, res);
+  sendData(200, "success", "Wishlist cleared successfully", user, res);
 });
 
 export const removeFromWishlist = catchAsync(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(req.user.id,
-    { $pull: { wishlist: req.body.carId } },
+    { $pull: { wishlist: req.params.carId } },
     { new: true }
   );
-
   if (!user) {
     return next(new AppError(`user id is not exists`, 404));
   }
-  sendData(200, "success", "Car removed from wishlist successfully", null, res);
+  sendData(200, "success", "Car removed from wishlist successfully", user, res);
 });
 
 export const getAllUserCars = catchAsync(async (req, res, next) => {

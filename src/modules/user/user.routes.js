@@ -38,7 +38,7 @@ userRouter
 userRouter.patch("/userProfile/updatePassword", isValid(updatePasswordValidation), updateMyPassword);
 
 userRouter.delete("/clearWishlist", clearWishlist);
-userRouter.route("/wishList")
+userRouter.route("/wishList/:carId")
   .patch(addToWishlist)
   .delete(removeFromWishlist);
 //------------------------------------------------------------
