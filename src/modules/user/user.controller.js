@@ -63,6 +63,10 @@ const populateObj = [
     path: "ownedCars",
     select: "-__v",
   },
+  {
+    path: "wishlist",
+    select: "-__v",
+  },
 ];
 
 
