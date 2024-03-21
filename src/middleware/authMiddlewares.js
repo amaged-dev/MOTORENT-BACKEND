@@ -92,18 +92,45 @@ export const isVerified = catchAsync(async (req, res, next) => {
 
 //-----------------------------------------------------
 //? middleware to only allow the creator or admin to perform the next action
+// export const isCreatorUserOrAdmin = (Model, modelName) => {
+//   return catchAsync(async (req, res, next) => {
+//     const document = await Model.findById(req.params.id);
+//     console.log(document,"document creater middleware")
+//     if (!document)
+//       return next(new AppError(`This ${modelName} is not found`, 500));
+//     if (
+//       req.user.role !== "admin" && (
+//       (String(document.ownerId) !== String(req.user._id))||
+//       (String(document.user) !== String(req.user._id)) ||
+//       (String(document.renterId) !== String(req.user._id))
+//       )) {
+//       return next(
+//         new AppError(
+//           `Only Admin or createrUser can perform this to ${modelName}`,
+//           401
+//         )
+//       );
+//     }
+//     next();
+//   });
+// };
 export const isCreatorUserOrAdmin = (Model, modelName) => {
   return catchAsync(async (req, res, next) => {
     const document = await Model.findById(req.params.id);
+    console.log(document, "document creator middleware");
+    console.log(req.user._id, "user Id");
     if (!document)
       return next(new AppError(`This ${modelName} is not found`, 500));
+
     if (
       req.user.role !== "admin" &&
-      String(document.createdBy) !== String(req.user._id)
+      String(document.user) !== String(req.user._id) &&
+      String(document.ownerId) !== String(req.user._id) &&
+      String(document.renterId) !== String(req.user._id)
     ) {
       return next(
         new AppError(
-          `Only Admin or createrUser can perform this to ${modelName}`,
+          `Only Admin or creatorUser can perform this to ${modelName}`,
           401
         )
       );

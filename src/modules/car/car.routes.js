@@ -30,13 +30,6 @@ carRouter.post("/addCar", fileUpload(filterObject.image).fields([
 ]), isValid(addCarValidation), collectDocumentKeysInObject, carController.addCar);
 carRouter.patch("/updateToAvailable/:id", isCreatorUserOrAdmin(Car, 'Car'), isValid(idValidation), carController.updateToAvailable);
 
-carRouter.use(accessRestrictedTo('admin'));
-carRouter.patch("/approveCar/:id", isValid(idValidation), carController.approveCar);
-carRouter.patch("/declineCar/:id", isValid(idValidation), carController.declineCar);
-carRouter.patch("/suspendCar/:id", isValid(idValidation), carController.suspendCar);
-carRouter.patch("/activateCar/:id", isValid(idValidation), carController.activateCar);
-
-
 carRouter.route("/:id")
     .get(isCreatorUserOrAdmin(Car, "Car"), isValid(idValidation), carController.getCar)
     .delete(isCreatorUserOrAdmin(Car, "Car"), isValid(idValidation), carController.deleteCar)
@@ -46,6 +39,14 @@ carRouter.route("/:id")
         { name: "doc-carLicense", maxCount: 1 },
         { name: "doc-carInspection", maxCount: 1 },
     ]), isValid(updateCarValidation), collectDocumentKeysInObject, carController.updateCar);
+
+    carRouter.use(accessRestrictedTo('admin'));
+carRouter.patch("/approveCar/:id", isValid(idValidation), carController.approveCar);
+carRouter.patch("/declineCar/:id", isValid(idValidation), carController.declineCar);
+carRouter.patch("/suspendCar/:id", isValid(idValidation), carController.suspendCar);
+carRouter.patch("/activateCar/:id", isValid(idValidation), carController.activateCar);
+
+
 
 
 export default carRouter;

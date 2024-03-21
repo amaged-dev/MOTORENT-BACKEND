@@ -17,15 +17,16 @@ messagesRouter.route("/")
         fileUpload(filterObject.image).single('attachments'),
         isValid(createMessageValidation), messagesController.sendMessage)
     .get(messagesController.getMyMessages);
-
+    
+    messagesRouter.route("/:id")
+        .get(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.getMessage)
+        .patch(isCreatorUserOrAdmin(Message, 'Message'), isValid(updateMessageValidation), messagesController.addReplay)
+        .delete(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.deleteMessage);
+    
 messagesRouter.use(accessRestrictedTo('admin'));
 messagesRouter.get("/all-messages", messagesController.getAllMessages);
 messagesRouter.get("/user-messages/:userId", messagesController.getUserMessages);
 messagesRouter.post("/messages-status", messagesController.getMessagesByStatus);
 
-messagesRouter.route("/:id")
-    .get(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.getMessage)
-    .patch(isCreatorUserOrAdmin(Message, 'Message'), isValid(updateMessageValidation), messagesController.addReplay)
-    .delete(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.deleteMessage);
 
 export default messagesRouter;
