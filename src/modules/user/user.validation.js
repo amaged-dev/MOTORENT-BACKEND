@@ -147,6 +147,9 @@ export const updateUserValidation = Joi.object({
 
 
 export const resetPasswordValidation = Joi.object({
+    token:Joi.string().required().messages({
+        'any.required': 'Code is requires',
+        'string.empty': 'Must enter the Code',}),
     password: Joi.string().required().trim().min(8).pattern(
         new RegExp(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]+$/
