@@ -9,7 +9,7 @@ export function getAll(Model, PopulateObj) {
   return catchAsync(async (req, res, next) => {
     let filterReviewId = {};
 
-    if (req.params.carId) filterCarId = { car: req.params.carId };
+    if (req.params.carId) filterReviewId = { car: req.params.carId };
 
     const queryFeatured = new APIFeatures(Model.find(filterReviewId).populate(PopulateObj), req.query)
       .filter()
