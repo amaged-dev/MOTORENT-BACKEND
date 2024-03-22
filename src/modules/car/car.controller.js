@@ -174,6 +174,24 @@ export const getTop5Cars = catchAsync(async (req, res, next) => {
     {
       $limit: 5,
     },
+    {
+      $lookup: {
+        from: "brands",
+        localField: "brand",
+        foreignField: "_id",
+        as: "brandArray",
+      },
+    },
+    {
+      $addFields: {
+        brand: { $arrayElemAt: ["$brandArray", 0] },
+      },
+    },
+    {
+      $project: {
+        brandArray: 0, 
+      },
+    },
   ]);
   sendData(200, "success", "Top 5 Cars fetched successfully", top5Cars, res);
 });
@@ -203,25 +221,33 @@ export const getTop5CarsByCategory = catchAsync(async (req, res, next) => {
     {
       $limit: 5,
     },
+    {
+      $lookup: {
+        from: "brands",
+        localField: "brand",
+        foreignField: "_id",
+        as: "brand",
+      },
+    },
   ]);
   sendData(200, "success", "Top 5 Cars fetched successfully", top5Cars, res);
 });
 
 //----------------------------------------------
 export const getTop5CheapestCars = catchAsync(async (req, res, next) => {
-  const top5Cars = await Car.find().sort({ priceForDay: 1 }).limit(5);
+  const top5Cars = await Car.find().sort({ priceForDay: 1 }).limit(5).populate('brand');
   sendData(200, "success", "Top 5 Cheapest Cars fetched successfully", top5Cars, res);
 });
 
 //----------------------------------------------
 export const getTop5ExpensiveCars = catchAsync(async (req, res, next) => {
-  const top5Cars = await Car.find().sort({ priceForDay: -1 }).limit(5);
+  const top5Cars = await Car.find().sort({ priceForDay: -1 }).limit(5).populate('brand');
   sendData(200, "success", "Top 5 Expensive Cars fetched successfully", top5Cars, res);
 });
 
 //----------------------------------------------
 export const getCarsByManufacturingYear = catchAsync(async (req, res, next) => {
-  const cars = await Car.find({ manufacturingYear: { $gte: req.body.from, $lte: req.body.to } });
+  const cars = await Car.find({ manufacturingYear: { $gte: req.body.from, $lte: req.body.to } }).populate('brand');
   if (!cars) {
     return next(new AppError(`No Cars Exists in this year`, 404));
   }
