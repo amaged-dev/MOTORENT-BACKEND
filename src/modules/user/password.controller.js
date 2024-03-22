@@ -42,11 +42,11 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 
   //? 3- send email to the user with the reset pass token
 
-
-  const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/resetPassword/${resetToken}`;
+  const url = `http://localhost:5173/resetPassword/${resetToken}`;
   const subject = "Reset Password Token link will expires whithin 15 minutes";
   const message = `We've received a request to reset your password,
    Copy this code to your page: ${resetToken}.
+   or click on below button.
    If you didn't forget your password, please ignore this email!`;
   try {
     await sendEmail({

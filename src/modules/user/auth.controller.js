@@ -78,7 +78,8 @@ export const signup = catchAsync(async (req, res, next) => {
   const token = newUser.createVerifyEmailToken(15);
   await newUser.save({ validateBeforeSave: false });
 
-  const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
+  // const url = `${process.env.BASE_URL}${process.env.PORT}/api/v1/users/verify/${token}`;
+  const url = `http://localhost:5173/verifyEmail/${token}`;
   const subject = "Verify Email link will expires whithin 15 minutes";
   const message = `Thank you for signing up! To complete your registration,
     please click on the verification link below.
