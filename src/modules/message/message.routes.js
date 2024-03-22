@@ -18,15 +18,15 @@ messagesRouter.route("/")
         isValid(createMessageValidation), messagesController.sendMessage)
     .get(messagesController.getMyMessages);
     
+    
+    messagesRouter.get("/all-messages",accessRestrictedTo('admin'), messagesController.getAllMessages);
+    messagesRouter.get("/user-messages/:userId",accessRestrictedTo('admin'), messagesController.getUserMessages);
+    messagesRouter.post("/messages-status",accessRestrictedTo('admin'), messagesController.getMessagesByStatus);
+    
     messagesRouter.route("/:id")
         .get(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.getMessage)
         .patch(isCreatorUserOrAdmin(Message, 'Message'), isValid(updateMessageValidation), messagesController.addReplay)
         .delete(isCreatorUserOrAdmin(Message, 'Message'), isValid(idValidation), messagesController.deleteMessage);
     
-messagesRouter.use(accessRestrictedTo('admin'));
-messagesRouter.get("/all-messages", messagesController.getAllMessages);
-messagesRouter.get("/user-messages/:userId", messagesController.getUserMessages);
-messagesRouter.post("/messages-status", messagesController.getMessagesByStatus);
-
 
 export default messagesRouter;
