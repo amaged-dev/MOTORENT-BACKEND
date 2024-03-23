@@ -113,9 +113,9 @@ export const paymentSuccess = catchAsync(async (req, res, next) => {
         return next(new AppError("please pay first!", 401));
     }
 
-    if (rental.invoice.id) {
-        return next(new AppError("payment invoice already issued!", 401));
-    }
+    // if (rental.invoice.id) {
+    //     return next(new AppError("payment invoice already issued!", 401));
+    // }
 
     // rental days
     const from = new Date(rental.from);

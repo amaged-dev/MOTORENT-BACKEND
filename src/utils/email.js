@@ -20,7 +20,7 @@ export const sendEmail = async ({ email, subject, url, message, attachments }) =
     to: email,
     subject,
     // html,
-    html: emailTemplate(url, message) ,
+    html: url ? emailTemplate(url, message) : message ,
     attachments
   };
 
