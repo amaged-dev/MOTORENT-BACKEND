@@ -97,13 +97,29 @@ export const createRental = catchAsync(async (req, res, next) => {
         ],
     });
 
-    const resData = { id: rental._id, url: session.url }
+    const resData = { id: rental._id, url: session.url };
 
     await Rental.findByIdAndUpdate(rental._id, { sessionId: session.id }, { new: true });
 
     sendData(201, "success", "Rental created successfully", resData, res);
 });
 
+export const completeRental = catchAsync(async (req, res, next) => {
+    const rentalId = req.params.id;
+    const rental = await Rental.findById(rentalId);
+
+    if (!rental) {
+        throw new AppError("Rental not found", 404);
+    }
+
+    rental.status = "completed";
+    await rental.save();
+
+    // update the car to available again 
+    await Car.findByIdAndDelete(rental.car, { active: true, status: "available" });
+
+    sendData(200, "success", "Rental completed successfully", rental, res);
+});
 
 export const paymentSuccess = catchAsync(async (req, res, next) => {
 
