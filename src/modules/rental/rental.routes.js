@@ -26,7 +26,7 @@ rentalRouter.get('/getAllRentals', accessRestrictedTo('admin'), rentalController
 rentalRouter.get('/getMyRentals', isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getMyRentals);
 rentalRouter.get('/platformRevenue', rentalControllers.totalPlatformRevenue); // total on platform
 rentalRouter.get('/revenue/:year', isValid(yearlyRevenueValidation), rentalControllers.calculateMonthlyRevenue);
-rentalRouter.get('/completeRental', isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.completeRental);
+rentalRouter.get('/completeRental/:id', isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.completeRental);
 
 rentalRouter.route("/:id")
     .get(isValid(idValidation), isCreatorUserOrAdmin(Rental, 'Rental'), rentalControllers.getOneRental)
