@@ -26,7 +26,7 @@ const rentalSchema = new mongoose.Schema({
     status: {
         type: String,
         default: "pending",
-        enum: ["paid", "pending", "cancelled"]
+        enum: ["paid", "pending", "cancelled", "completed"]
     },
     sessionId: {
         type: String,
